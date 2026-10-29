@@ -61,9 +61,9 @@ window.avatarSVG = function (look, opts) {
 
   // الشعر الخلفي
   if (style === "messy") {
-    s.push(`<path d="${spiky(120, 112, 86, 80, 150, 390, 26, 0.8)} Z" fill="${HAIR}"/>`);
-    s.push(`<path d="${spiky(120, 150, 74, 62, 95, 175, 8, 0.82)} L120 150 Z" fill="${HAIR}"/>`);
-    s.push(`<path d="${spiky(120, 150, 74, 62, 5, 85, 8, 0.82)} L120 150 Z" fill="${HAIR}"/>`);
+    // شعر منكوش طويل ينسدل حتى الكتفين مع خصلات متطايرة
+    s.push(`<path d="M78 206 L46 214 L58 194 L32 188 L50 170 L26 158 L46 144 L24 128 L44 116 L28 98 L50 92 L40 70 L64 72 L58 48 L84 58 L84 32 L104 48 L112 20 L126 44 L142 22 L148 48 L172 32 L168 60 L194 52 L182 78 L210 80 L190 100 L214 116 L192 126 L214 144 L192 156 L212 172 L188 180 L206 202 L180 200 L194 216 L162 206 L160 150 L80 150 Z" fill="${HAIR}" stroke="${HAIRD}" stroke-width="2" stroke-linejoin="round"/>`);
+    s.push(`<path d="M100 42 q-8 -16 4 -26 M132 30 q6 -14 -4 -22 M152 46 q16 -8 12 -24 q-2 -7 7 -9 M66 76 q-18 -4 -24 -18 M180 70 q16 -2 24 -16 M40 120 q-14 2 -20 -8 M200 130 q14 0 18 -10" fill="none" stroke="${HAIR}" stroke-width="3.5" stroke-linecap="round"/>`);
   } else if (style === "comb") {
     s.push(`<path d="M60 122 C54 58 90 36 120 36 C152 36 188 58 180 124 L188 214 C172 224 152 218 150 214 L150 150 L90 150 L90 214 C86 220 66 224 52 214 Z" fill="${HAIR}"/>`);
   } else if (style === "bun") {
@@ -112,9 +112,7 @@ window.avatarSVG = function (look, opts) {
     s.push(`<path d="M64 116 C66 66 98 50 124 52 C154 54 178 72 176 116 C164 92 144 78 120 80 C106 82 94 92 90 106 C84 96 76 98 64 116 Z" fill="${HAIR}"/>`);
     s.push(`<path d="M100 60 C112 56 132 56 146 62" fill="none" stroke="${HAIR2}" stroke-width="3" stroke-linecap="round"/>`);
   } else {
-    s.push(`<path d="M62 112 L70 74 L80 96 L88 62 L100 90 L110 56 L120 88 L132 56 L142 90 L152 62 L160 96 L170 74 L178 112 C170 86 150 78 120 80 C92 80 72 88 62 112 Z" fill="${HAIR}"/>`);
-    s.push(`<path d="M40 70 q8 -10 16 0 q8 10 16 0 M182 44 q10 -6 14 4" fill="none" stroke="${HAIR}" stroke-width="3" stroke-linecap="round"/>`);
-    s.push(`<text x="196" y="72" font-size="30" font-weight="700" fill="#e39a4f" font-family="Almarai,sans-serif">؟</text><text x="30" y="58" font-size="22" font-weight="700" fill="#1f8a8a" font-family="Almarai,sans-serif">؟</text>`);
+    s.push(`<path d="M62 120 L64 84 L80 100 L82 62 L100 92 L110 54 L120 90 L132 56 L140 92 L158 62 L160 100 L176 84 L178 120 C170 94 148 84 120 84 C92 84 70 94 62 120 Z" fill="${HAIR}" stroke="${HAIRD}" stroke-width="1.5" stroke-linejoin="round"/>`);
   }
 
   if (L.has("bow")) s.push(`<g transform="translate(70 70) rotate(-20)"><path d="M0 0 L-20 -12 L-20 12 Z M0 0 L20 -12 L20 12 Z" fill="${C("bow", "#ff6f9f")}" stroke="${shade(C("bow", "#ff6f9f"), .8)}" stroke-width="2" stroke-linejoin="round"/><circle r="6" fill="${shade(C("bow", "#ff6f9f"), .8)}"/></g>`);
