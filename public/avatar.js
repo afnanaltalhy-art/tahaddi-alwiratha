@@ -1,51 +1,45 @@
 // صورة الطالبة الكرتونية + لمسات الصالون
 // المجموعات ذات الاختيار الواحد (تسريحة، لون الشعر، لون العيون، الخلفية): اختيار جديد يستبدل القديم
-window.TOUCH_GROUPS = [
-  { id: "style", title: "💇‍♀️ تسريحة الشعر", exclusive: true, items: [
-    { id: "comb", icon: "💇‍♀️", name: "تمشيط وفرد" },
-    { id: "braid", icon: "🪢", name: "ضفيرة جانبية" },
-    { id: "bun", icon: "🍩", name: "كعكة" } ] },
-  { id: "hair", title: "🎨 لون الشعر", exclusive: true, items: [
-    { id: "hair-black", color: "#1b1411", name: "أسود" },
-    { id: "hair-brown", color: "#6b3f22", name: "بنّي" },
-    { id: "hair-honey", color: "#b9803d", name: "عسلي" },
-    { id: "hair-auburn", color: "#9a3a1c", name: "كستنائي" },
-    { id: "hair-pink", color: "#e47aa3", name: "وردي" },
-    { id: "hair-purple", color: "#8a63d2", name: "بنفسجي" } ] },
-  { id: "eyes", title: "👁️ لون العيون", exclusive: true, items: [
-    { id: "eye-honey", color: "#a8742c", name: "عسلي" },
-    { id: "eye-green", color: "#3f8f5a", name: "أخضر" },
-    { id: "eye-blue", color: "#3b7fc4", name: "أزرق" } ] },
-  { id: "makeup", title: "💄 مكياج", items: [
-    { id: "blush", icon: "🌸", name: "أحمر خدود" },
-    { id: "lips", icon: "💄", name: "أحمر شفاه" },
-    { id: "lashes", icon: "✨", name: "كحل ورموش" },
-    { id: "shadow", icon: "🎨", name: "ظل عيون" } ] },
-  { id: "acc", title: "🎀 إكسسوارات", items: [
-    { id: "bow", icon: "🎀", name: "فيونكة" },
-    { id: "flower", icon: "🌼", name: "وردة" },
-    { id: "earrings", icon: "💎", name: "أقراط" },
-    { id: "goggles", icon: "🥽", name: "نظارة المختبر" },
-    { id: "crown", icon: "👑", name: "تاج نجمة العلوم" } ] },
-  { id: "bg", title: "🖼️ الخلفية", exclusive: true, items: [
-    { id: "bg-pink", color: "#ffd9e8", name: "وردية" },
-    { id: "bg-mint", color: "#d4f3e6", name: "نعناعية" },
-    { id: "bg-sky", color: "#d6ebff", name: "سماوية" },
-    { id: "bg-gold", color: "#fff0c2", name: "ذهبية" } ] },
+window.FEATURES = [
+  { id: "style", name: "تسريحة الشعر", icon: "💇‍♀️", v: [
+    { id: "comb", name: "فرد", icon: "〰️" }, { id: "braid", name: "ضفيرة", icon: "🪢" }, { id: "bun", name: "كعكة", icon: "🍩" } ] },
+  { id: "hair", name: "لون الشعر", icon: "🎨", v: [
+    { id: "black", name: "أسود", color: "#1b1411" }, { id: "brown", name: "بنّي", color: "#6b3f22" }, { id: "honey", name: "عسلي", color: "#b9803d" },
+    { id: "auburn", name: "كستنائي", color: "#9a3a1c" }, { id: "pink", name: "وردي", color: "#e47aa3" }, { id: "purple", name: "بنفسجي", color: "#8a63d2" } ] },
+  { id: "eyes", name: "لون العيون", icon: "👁️", v: [
+    { id: "honey", name: "عسلي", color: "#a8742c" }, { id: "green", name: "أخضر", color: "#3f8f5a" }, { id: "blue", name: "أزرق", color: "#3b7fc4" } ] },
+  { id: "blush", name: "أحمر خدود", icon: "🌸", v: [
+    { id: "pink", name: "وردي", color: "#ff8fa6" }, { id: "coral", name: "مرجاني", color: "#ff8a70" }, { id: "rose", name: "زهري", color: "#e86b9a" } ] },
+  { id: "lips", name: "أحمر شفاه", icon: "💄", v: [
+    { id: "red", name: "أحمر", color: "#e2456a" }, { id: "nude", name: "طبيعي", color: "#d98274" }, { id: "berry", name: "توتي", color: "#a8285e" } ] },
+  { id: "shadow", name: "ظل عيون", icon: "✨", v: [
+    { id: "purple", name: "بنفسجي", color: "#9b6fd8" }, { id: "pink", name: "وردي", color: "#f48fb1" }, { id: "gold", name: "ذهبي", color: "#e6b84a" } ] },
+  { id: "lashes", name: "كحل ورموش", icon: "🖤", v: [{ id: "on", name: "أضيفي" }] },
+  { id: "bow", name: "فيونكة", icon: "🎀", v: [
+    { id: "pink", name: "وردية", color: "#ff6f9f" }, { id: "blue", name: "زرقاء", color: "#5aa9e6" }, { id: "purple", name: "بنفسجية", color: "#9b6fd8" } ] },
+  { id: "flower", name: "وردة", icon: "🌼", v: [
+    { id: "yellow", name: "صفراء", color: "#ffd23f" }, { id: "pink", name: "وردية", color: "#ff8fb8" }, { id: "white", name: "بيضاء", color: "#ffffff" } ] },
+  { id: "earrings", name: "أقراط", icon: "💎", v: [
+    { id: "aqua", name: "فيروزي", color: "#5ec8e5" }, { id: "pearl", name: "لؤلؤ", color: "#f3ede2" }, { id: "ruby", name: "ياقوت", color: "#e2456a" } ] },
+  { id: "goggles", name: "نظارة المختبر", icon: "🥽", v: [{ id: "on", name: "أضيفي" }] },
+  { id: "crown", name: "تاج نجمة العلوم", icon: "👑", v: [{ id: "on", name: "أضيفي" }] },
+  { id: "bg", name: "الخلفية", icon: "🖼️", v: [
+    { id: "pink", name: "وردية", color: "#ffd9e8" }, { id: "mint", name: "نعناعية", color: "#d4f3e6" }, { id: "sky", name: "سماوية", color: "#d6ebff" }, { id: "gold", name: "ذهبية", color: "#fff0c2" } ] },
 ];
-window.TOUCHES = TOUCH_GROUPS.flatMap(g => g.items.map(i => ({ ...i, group: g.id })));
+window.featureColor = (look, f, def) => { const v = look && look[f]; if (!v) return def; const it = FEATURES.find(x => x.id === f).v.find(x => x.id === v); return (it && it.color) || def; };
 
 window.avatarSVG = function (look, opts) {
-  const L = new Set(look || []);
+  look = (look && !Array.isArray(look)) ? look : {};
+  const L = { has: (f) => !!look[f] };
   const o = Object.assign({ bg: true, id: "a" + Math.random().toString(36).slice(2, 7) }, opts || {});
-  const find = (g, def) => { const it = TOUCH_GROUPS.find(x => x.id === g).items.find(i => L.has(i.id)); return it ? it.color : def; };
-  const HAIR = find("hair", "#3a2318");
+  const C = (f, def) => featureColor(look, f, def);
+  const HAIR = C("hair", "#3a2318");
   const shade = (hex, k) => { const n = parseInt(hex.slice(1), 16); const f = (c) => Math.max(0, Math.min(255, Math.round(c * k))); return "#" + [n >> 16, (n >> 8) & 255, n & 255].map(c => f(c).toString(16).padStart(2, "0")).join(""); };
   const HAIR2 = shade(HAIR, 1.35), HAIRD = shade(HAIR, 0.75);
-  const EYE = find("eyes", "#3b2a20");
-  const BG = find("bg", null);
+  const EYE = C("eyes", "#3b2a20");
+  const BG = C("bg", null);
   const SKIN = "#f7d2b4", SKIN2 = "#eab896";
-  const style = L.has("bun") ? "bun" : L.has("braid") ? "braid" : L.has("comb") ? "comb" : "messy";
+  const style = look.style || "messy";
   const neat = style !== "messy";
 
   const spiky = (cx, cy, rx, ry, a0, a1, n, k) => {
@@ -94,11 +88,11 @@ window.avatarSVG = function (look, opts) {
 
   // الأذنان والأقراط
   s.push(`<circle cx="67" cy="128" r="11" fill="${SKIN2}"/><circle cx="173" cy="128" r="11" fill="${SKIN2}"/>`);
-  if (L.has("earrings")) for (const x of [66, 174]) s.push(`<circle cx="${x}" cy="142" r="3.5" fill="#e0a624"/><path d="M${x} 145 L${x - 6} 156 L${x} 164 L${x + 6} 156 Z" fill="#5ec8e5" stroke="#e0a624" stroke-width="1.5"/>`);
+  if (L.has("earrings")) for (const x of [66, 174]) s.push(`<circle cx="${x}" cy="142" r="3.5" fill="#e0a624"/><path d="M${x} 145 L${x - 6} 156 L${x} 164 L${x + 6} 156 Z" fill="${C("earrings", "#5ec8e5")}" stroke="#e0a624" stroke-width="1.5"/>`);
 
   // الوجه
   s.push(`<ellipse cx="120" cy="122" rx="53" ry="58" fill="${SKIN}"/>`);
-  if (L.has("shadow")) s.push(`<ellipse cx="98" cy="117" rx="14" ry="8" fill="#9b6fd8" opacity=".55"/><ellipse cx="142" cy="117" rx="14" ry="8" fill="#9b6fd8" opacity=".55"/>`);
+  if (L.has("shadow")) s.push(`<ellipse cx="98" cy="117" rx="14" ry="8" fill="${C("shadow", "#9b6fd8")}" opacity=".6"/><ellipse cx="142" cy="117" rx="14" ry="8" fill="${C("shadow", "#9b6fd8")}" opacity=".6"/>`);
   for (const x of [98, 142]) s.push(`<ellipse cx="${x}" cy="125" rx="10" ry="11" fill="#fff"/><circle cx="${x}" cy="127" r="6.5" fill="${EYE}"/><circle cx="${x}" cy="127" r="3" fill="#1d1410"/><circle cx="${x + 2.5}" cy="124" r="2.2" fill="#fff"/>`);
   if (L.has("lashes")) {
     s.push(`<path d="M87 121 Q98 110 110 121" fill="none" stroke="#1d1410" stroke-width="3.2" stroke-linecap="round"/><path d="M131 121 Q142 110 154 121" fill="none" stroke="#1d1410" stroke-width="3.2" stroke-linecap="round"/>`);
@@ -108,9 +102,9 @@ window.avatarSVG = function (look, opts) {
     ? `<path d="M86 104 Q98 97 110 103 M130 103 Q142 97 154 104" fill="none" stroke="${HAIRD}" stroke-width="3.5" stroke-linecap="round"/>`
     : `<path d="M86 101 Q98 102 110 106 M130 106 Q142 102 154 101" fill="none" stroke="${HAIRD}" stroke-width="3.5" stroke-linecap="round"/>`);
   s.push(`<path d="M118 132 Q121 142 116 146" fill="none" stroke="${SKIN2}" stroke-width="3" stroke-linecap="round"/>`);
-  if (L.has("blush")) s.push(`<circle cx="84" cy="146" r="11" fill="#ff8fa6" opacity=".5"/><circle cx="156" cy="146" r="11" fill="#ff8fa6" opacity=".5"/>`);
+  if (L.has("blush")) s.push(`<circle cx="84" cy="146" r="11" fill="${C("blush", "#ff8fa6")}" opacity=".55"/><circle cx="156" cy="146" r="11" fill="${C("blush", "#ff8fa6")}" opacity=".55"/>`);
   s.push(L.has("lips")
-    ? `<path d="M104 157 Q112 152 120 156 Q128 152 136 157 Q128 170 120 170 Q112 170 104 157 Z" fill="#e2456a"/><path d="M106 158 Q120 162 134 158" fill="none" stroke="#b52d50" stroke-width="1.5"/>`
+    ? `<path d="M104 157 Q112 152 120 156 Q128 152 136 157 Q128 170 120 170 Q112 170 104 157 Z" fill="${C("lips", "#e2456a")}"/><path d="M106 158 Q120 162 134 158" fill="none" stroke="${shade(C("lips", "#e2456a"), .75)}" stroke-width="1.5"/>`
     : `<path d="M106 157 Q120 168 134 157" fill="none" stroke="#b5654f" stroke-width="3.2" stroke-linecap="round"/>`);
 
   // الغرة
@@ -123,10 +117,10 @@ window.avatarSVG = function (look, opts) {
     s.push(`<text x="196" y="72" font-size="30" font-weight="700" fill="#e39a4f" font-family="Almarai,sans-serif">؟</text><text x="30" y="58" font-size="22" font-weight="700" fill="#1f8a8a" font-family="Almarai,sans-serif">؟</text>`);
   }
 
-  if (L.has("bow")) s.push(`<g transform="translate(70 70) rotate(-20)"><path d="M0 0 L-20 -12 L-20 12 Z M0 0 L20 -12 L20 12 Z" fill="#ff6f9f" stroke="#d94c7d" stroke-width="2" stroke-linejoin="round"/><circle r="6" fill="#d94c7d"/></g>`);
+  if (L.has("bow")) s.push(`<g transform="translate(70 70) rotate(-20)"><path d="M0 0 L-20 -12 L-20 12 Z M0 0 L20 -12 L20 12 Z" fill="${C("bow", "#ff6f9f")}" stroke="${shade(C("bow", "#ff6f9f"), .8)}" stroke-width="2" stroke-linejoin="round"/><circle r="6" fill="${shade(C("bow", "#ff6f9f"), .8)}"/></g>`);
   if (L.has("flower")) {
     s.push(`<g transform="translate(170 78)">`);
-    for (let i = 0; i < 5; i++) { const a = i * 72 * Math.PI / 180; s.push(`<circle cx="${(Math.cos(a) * 9).toFixed(1)}" cy="${(Math.sin(a) * 9).toFixed(1)}" r="7.5" fill="#ffd23f" stroke="#f0a500" stroke-width="1"/>`); }
+    for (let i = 0; i < 5; i++) { const a = i * 72 * Math.PI / 180; s.push(`<circle cx="${(Math.cos(a) * 9).toFixed(1)}" cy="${(Math.sin(a) * 9).toFixed(1)}" r="7.5" fill="${C("flower", "#ffd23f")}" stroke="${shade(C("flower", "#ffd23f"), .85)}" stroke-width="1"/>`); }
     s.push(`<circle r="5.5" fill="#f08a24"/></g>`);
   }
   if (L.has("goggles")) {

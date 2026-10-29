@@ -42,16 +42,28 @@
 .fb.ok .msg{color:var(--green)}.fb.no .msg{color:var(--red)}
 .fb .exp{margin-top:6px;font-size:15.5px}
 .fb .exp b{color:var(--purple)}
-.picker{margin-top:14px;background:#fff;border-radius:14px;padding:12px;border:1.5px dashed #f2a3c3}
-.picker h4{margin:0 0 6px;color:#b8326a;font-size:16px}
-.picker .grp{margin-top:8px}
-.picker .gt{font-size:13.5px;font-weight:700;color:var(--muted);margin-bottom:5px}
-.picker .row{display:flex;flex-wrap:wrap;gap:6px}
-.picker button{border:1.5px solid #f6d3e2;background:#fff8fb;border-radius:12px;padding:6px 10px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px}
-.picker button .e{font-size:19px;line-height:1}
-.picker button .sw{width:20px;height:20px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px #d9cfe3;flex:none}
-.picker button:hover{border-color:#ff6f9f}
-.picker button.used{opacity:.4;cursor:default}
+.salon{text-align:center}
+.mirror{width:min(340px,86%);margin:4px auto 0;padding:10px;border-radius:200px 200px 26px 26px;background:linear-gradient(#fff6d8,#ffe7f0);box-shadow:0 0 0 6px #fff3c4 inset,0 8px 24px rgba(184,50,106,.15)}
+.mirror .av{border-radius:190px 190px 20px 20px;overflow:hidden;background:#fff}
+.mirror .av.pop{animation:pop .6s}
+.salon h2{margin:14px 0 0;color:#2f6b4f;font-size:28px}
+.salon .stat{color:var(--muted);font-size:15px}
+.salon .stat b{color:var(--ink)}
+.salon .say{margin:12px 0;background:#e6f4ec;color:#2f6b4f;border-radius:16px;padding:12px 14px;font-weight:700;font-size:17px}
+.salon .say.view{background:#f3f0fb;color:var(--purple)}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;text-align:center}
+@media (min-width:700px){.fgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.fcard{border:2px solid #4f8f6c;border-radius:20px;padding:12px 8px;background:#fbfdfb;box-shadow:0 0 0 4px #e8f3ec}
+.fcard .ic{width:62px;height:62px;margin:0 auto;border-radius:16px;background:#f1ecfb;display:flex;align-items:center;justify-content:center;font-size:32px}
+.fcard .fn{font-weight:700;font-size:16px;margin:8px 0}
+.fcard .vs{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+.vbtn{width:36px;height:36px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1.5px #d6d0e2;cursor:pointer;padding:0;font-size:18px;background:#fff;display:flex;align-items:center;justify-content:center}
+.vbtn.chip{width:auto;height:34px;border-radius:99px;padding:0 12px;font-size:13.5px;font-weight:700;color:var(--ink);font-family:inherit;background:#fff8fb}
+.vbtn.on{box-shadow:0 0 0 3px #2f6b4f}
+.vbtn:disabled{cursor:default}
+.locked .vbtn:not(.on){opacity:.45}
+.salon .btn{max-width:420px;margin-left:auto;margin-right:auto}
+.mypic{margin-top:8px;border:0;background:#fff0f6;color:#b8326a;font-weight:700;border-radius:99px;padding:6px 14px;cursor:pointer;font-size:13.5px;font-family:inherit}
 .nextbtn{margin-top:12px}
 .sparkle{position:fixed;pointer-events:none;font-size:26px;animation:fly 1s ease-out forwards;z-index:9}
 @keyframes fly{from{opacity:1;transform:translate(0,0) scale(.6)}to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3)}}
@@ -111,7 +123,7 @@
     <div class="how">
       <div><span class="i">✍️</span><p style="margin:0"><b>اكتبي اسمك الثلاثي واختاري فصلك</b><span>اكتبيه بدقة، فلكل طالبة محاولة واحدة فقط.</span></p></div>
       <div><span class="i">⏱️</span><p style="margin:0"><b>أجيبي عن ٢٢ سؤالًا من وحدة الوراثة</b><span>لكل سؤال ٤٥ ثانية. الإجابة الصحيحة = ١٠٠ نقطة + مكافأة سرعة حتى ٥٠ نقطة.</span></p></div>
-      <div><span class="i">💇‍♀️</span><p style="margin:0"><b>كل إجابة صحيحة تُدخلك الصالون</b><span>اختاري بنفسك لمسة لصورتك: تسريحة، لون الشعر، لون العيون، مكياج، إكسسوارات، أو خلفية. تبدئين بشعر منكوش وتنتهين نجمة علوم متوّجة 👑</span></p></div>
+      <div><span class="i">💇‍♀️</span><p style="margin:0"><b>كل إجابة صحيحة تُدخلك الصالون</b><span>تنتقلين إلى صفحة صالونك وتختارين بنفسك لمسة ولونها: التسريحة، لون الشعر والعيون، المكياج، الإكسسوارات، الخلفية. تبدئين بشعر منكوش وتنتهين نجمة علوم متوّجة 👑</span></p></div>
       <div><span class="i">💡</span><p style="margin:0"><b>بعد كل إجابة يظهر شرح قصير</b><span>اقرئيه جيدًا، ثم اضغطي «السؤال التالي». الوقت لا يُحسب أثناء الشرح.</span></p></div>
       <div><span class="i">🏆</span><p style="margin:0"><b>النتائج تُحفظ تلقائيًا</b><span>تظهر لمعلمتك، وتُتوَّج الثلاث الأوائل على منصة التتويج حسب الدقة والسرعة.</span></p></div>
     </div>
@@ -131,6 +143,7 @@
         <div class="sub" id="h-cls"></div>
         <div class="pts"><span id="h-pts">٠</span> نقطة</div>
         <div class="looks" id="h-looks"></div>
+        <button class="mypic hidden" id="mypic">👀 صورتي في الصالون</button>
       </div>
     </aside>
     <section class="card main">
@@ -151,14 +164,21 @@
       <div class="fb" id="fb">
         <div class="msg" id="fb-msg"></div>
         <div class="exp" id="fb-exp"></div>
-        <div class="picker hidden" id="picker">
-          <h4>✨ ادخلي الصالون واختاري لمسة واحدة لصورتك</h4>
-          <div id="pgrid"></div>
-        </div>
+        <button class="btn nextbtn hidden" id="salonbtn" style="background:linear-gradient(90deg,#d94c7d,#ff6f9f)">💇‍♀️ ادخلي الصالون واختاري لمستك</button>
         <button class="btn nextbtn" id="nextbtn">السؤال التالي ←</button>
       </div>
     </section>
   </div>
+
+  <!-- الصالون -->
+  <section id="s-salon" class="card salon hidden">
+    <div class="mirror"><div class="av" id="sl-av"></div></div>
+    <h2 id="sl-title"></h2>
+    <div class="stat">النقاط: <b id="sl-pts"></b> · اللمسات المتاحة: <b id="sl-av-n"></b></div>
+    <div class="say" id="sl-say"></div>
+    <div class="fgrid" id="sl-grid"></div>
+    <button class="btn" id="sl-back">العودة للمسابقة ←</button>
+  </section>
 
   <!-- النتيجة -->
   <section id="s-res" class="card result hidden">
@@ -187,7 +207,7 @@ const CLS_AR = { "3-1": "ثالث ١", "3-2": "ثالث ٢", "3-3": "ثالث ٣
 const LETTERS = { a: "أ", b: "ب", c: "ج", d: "د" };
 const fmtTime = (ms) => { const s = Math.round(ms / 1000), m = Math.floor(s / 60); return (m ? AR(m) + " د " : "") + AR(s % 60) + " ث"; };
 const pickOne = (a) => a[Math.floor(Math.random() * a.length)];
-const SCREENS = ["s-entry", "s-how", "s-count", "s-q", "s-res"];
+const SCREENS = ["s-entry", "s-how", "s-count", "s-q", "s-salon", "s-res"];
 const show = (id) => { SCREENS.forEach(s => $(s).classList.toggle("hidden", s !== id)); window.scrollTo({ top: 0, behavior: "smooth" }); };
 const ls = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
              set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
@@ -197,8 +217,8 @@ const MSG_NO = ["لا بأس! حتى مندل جرّب آلاف النباتات
 
 let cls = null, S = null, Q = null, timerId = null, deadline = 0, locked = false, SEC = 45;
 
-$("hero-av").innerHTML = avatarSVG([]);
-$("strip").innerHTML = TOUCH_GROUPS.map(g => `<span>${g.title}</span>`).join("");
+$("hero-av").innerHTML = avatarSVG({});
+$("strip").innerHTML = FEATURES.map(f => `<span>${f.icon} ${f.name}</span>`).join("");
 $("howbtn").onclick = () => show("s-how");
 $("howback").onclick = () => show("s-entry");
 document.querySelectorAll("#classes button").forEach(b => b.onclick = () => {
@@ -216,9 +236,10 @@ async function retry(fn) {
 }
 const showErr = (m) => { $("err").textContent = m; $("err").style.display = m ? "block" : "none"; };
 
+const avail = () => Math.max(0, (S.correct || 0) - (S.used || 0));
 function drawAvatar(pop) {
   $("g-av").innerHTML = avatarSVG(S.look, { id: "g" });
-  $("h-looks").textContent = `💖 لمسات الصالون: ${AR(S.used || 0)}`;
+  $("h-looks").textContent = `💖 لمسات الصالون: ${AR(S.used || 0)}` + (avail() ? ` · متاحة: ${AR(avail())}` : "");
   if (pop) { $("g-av").classList.remove("pop"); void $("g-av").offsetWidth; $("g-av").classList.add("pop"); sparkle($("g-av")); }
 }
 function sparkle(el) {
@@ -240,7 +261,7 @@ $("go").onclick = async () => {
   $("go").disabled = true;
   try {
     const res = await api("start", { name, cls, token: saved && saved.token });
-    S = { key: res.key, token: res.token, name, cls, look: res.sum.look || [], used: res.sum.used || 0, pts: res.sum.points, total: res.sum.total };
+    S = { key: res.key, token: res.token, name, cls, look: (res.sum.look && !Array.isArray(res.sum.look)) ? res.sum.look : {}, used: res.sum.used || 0, correct: res.sum.correct || 0, pts: res.sum.points, total: res.sum.total };
     SEC = res.seconds || 45;
     ls.set("salon-wiratha", { token: res.token, key: res.key });
     $("h-name").textContent = name; $("h-cls").textContent = CLS_AR[cls]; $("h-pts").textContent = AR(S.pts);
@@ -267,7 +288,7 @@ async function nextQ() {
   $("prog").style.width = ((r.n - 1) / r.total * 100) + "%";
   $("qtext").textContent = Q.text;
   $("qfig").innerHTML = Q.fig || ""; $("qfig").style.display = Q.fig ? "flex" : "none";
-  $("fb").className = "fb"; $("picker").classList.add("hidden");
+  $("fb").className = "fb"; $("salonbtn").classList.add("hidden"); $("mypic").classList.add("hidden");
   const box = $("opts"); box.innerHTML = "";
   for (const k of ["a", "b", "c", "d"]) {
     const b = document.createElement("button");
@@ -306,35 +327,56 @@ async function pick(k) {
   $("fb-msg").textContent = res.ok ? `${pickOne(MSG_OK)}  +${AR(res.pts)}` : (k ? pickOne(MSG_NO) : "انتهى الوقت ⏰ الأسرع تكسب نقاطًا أكثر!");
   $("fb-exp").innerHTML = "<b>الشرح: </b>"; $("fb-exp").append(res.exp || "");
   $("nextbtn").classList.remove("hidden"); $("nextbtn").disabled = false;
-  $("nextbtn").textContent = res.sum.answered >= res.sum.total ? "عرض نتيجتي 🎉" : "السؤال التالي ←";
-  if (res.ok) {
-    $("picker").classList.remove("hidden");
-    $("pgrid").innerHTML = "";
-    TOUCH_GROUPS.forEach(g => {
-      const grp = document.createElement("div"); grp.className = "grp";
-      grp.innerHTML = `<div class="gt">${g.title}</div><div class="row"></div>`;
-      g.items.forEach(t => {
-        const b = document.createElement("button"); const used = S.look.includes(t.id);
-        b.className = used ? "used" : ""; b.disabled = used;
-        b.innerHTML = (t.color ? `<span class="sw" style="background:${t.color}"></span>` : `<span class="e">${t.icon}</span>`) + t.name;
-        b.onclick = () => chooseTouch(t.id);
-        grp.lastChild.appendChild(b);
-      });
-      $("pgrid").appendChild(grp);
-    });
-  }
+  lastAnswered = res.sum.answered >= res.sum.total;
+  $("nextbtn").textContent = lastAnswered ? "عرض نتيجتي 🎉" : "السؤال التالي ←";
+  S.correct = res.sum.correct; drawAvatar(false);
+  $("mypic").classList.remove("hidden");
+  if (res.ok) $("salonbtn").classList.remove("hidden");
   $("fb").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-async function chooseTouch(id) {
-  if (S.look.includes(id) || $("picker").classList.contains("hidden")) return;
-  const t = TOUCHES.find(x => x.id === id), g = TOUCH_GROUPS.find(x => x.id === t.group);
-  if (g.exclusive) S.look = S.look.filter(x => !g.items.some(i => i.id === x));
-  S.look.push(id); S.used = (S.used || 0) + 1; drawAvatar(true);
-  $("picker").classList.add("hidden");
-  $("fb-msg").textContent = pickOne(["واو! إطلالة جديدة 💖", "تألّقي يا نجمة العلوم ✨", "الصالون يليق بك 💇‍♀️", "جمال وعلم معًا 🌟"]);
-  try { const r = await api("touch", { key: S.key, token: S.token, touch: id }); S.look = r.look; S.used = r.used; } catch {}
+// ===== صفحة الصالون =====
+let lastAnswered = false;
+function openSalon() {
+  show("s-salon");
+  $("sl-title").textContent = "صالون " + S.name.split(" ")[0];
+  renderSalon(avail() ? `أحسنتِ يا ${S.name.split(" ")[0]}! اختاري لمسة جمال واحدة لصورتك 🌟` : null);
 }
+function renderSalon(msg) {
+  $("sl-av").innerHTML = avatarSVG(S.look, { id: "sl" });
+  $("sl-pts").textContent = AR(S.pts); $("sl-av-n").textContent = AR(avail());
+  const can = avail() > 0;
+  $("sl-say").className = "say" + (can ? "" : " view");
+  $("sl-say").textContent = msg || (can ? "اختاري لمسة جمال لصورتك 🌟" : "كل إجابة صحيحة تمنحك لمسة جديدة 💖 أكملي المسابقة!");
+  const g = $("sl-grid"); g.innerHTML = ""; g.classList.toggle("locked", !can);
+  FEATURES.forEach(f => {
+    const c = document.createElement("div"); c.className = "fcard";
+    c.innerHTML = `<div class="ic">${f.icon}</div><div class="fn">${f.name}</div><div class="vs"></div>`;
+    f.v.forEach(v => {
+      const b = document.createElement("button");
+      const on = S.look[f.id] === v.id;
+      b.className = "vbtn" + (v.color ? "" : " chip") + (on ? " on" : "");
+      b.title = v.name; b.setAttribute("aria-label", f.name + " " + v.name);
+      if (v.color) b.style.background = v.color; else b.textContent = v.icon ? v.icon + " " + v.name : (on ? "✓ مُضافة" : v.name);
+      b.disabled = !can || on;
+      b.onclick = () => applyTouch(f, v);
+      c.lastChild.appendChild(b);
+    });
+    g.appendChild(c);
+  });
+  $("sl-back").textContent = lastAnswered ? "عرض نتيجتي 🎉" : "العودة للمسابقة: السؤال التالي ←";
+}
+async function applyTouch(f, v) {
+  if (!avail()) return;
+  S.look = { ...S.look, [f.id]: v.id }; S.used++;
+  renderSalon(pickOne(["واو! إطلالة جديدة 💖", "تألّقي يا نجمة العلوم ✨", "الصالون يليق بك 💇‍♀️", "جمال وعلم معًا 🌟"]) + ` (${f.name}: ${v.name})`);
+  const av = $("sl-av"); av.classList.remove("pop"); void av.offsetWidth; av.classList.add("pop"); sparkle(av);
+  drawAvatar(false);
+  try { const r = await api("touch", { key: S.key, token: S.token, feature: f.id, variant: v.id }); S.look = r.look; S.used = r.used; } catch {}
+}
+$("salonbtn").onclick = openSalon;
+$("mypic").onclick = openSalon;
+$("sl-back").onclick = () => nextQ();
 $("nextbtn").onclick = () => nextQ();
 
 async function finish() {
