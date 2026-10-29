@@ -1,48 +1,82 @@
 // صورة الطالبة الكرتونية + لمسات الصالون
-window.TOUCHES = [
-  { id: "comb",     icon: "💇‍♀️", name: "تمشيط الشعر" },
-  { id: "blush",    icon: "🌸", name: "أحمر خدود" },
-  { id: "lips",     icon: "💄", name: "أحمر شفاه" },
-  { id: "lashes",   icon: "👁️", name: "كحل ورموش" },
-  { id: "shadow",   icon: "🎨", name: "ظل عيون" },
-  { id: "bow",      icon: "🎀", name: "فيونكة" },
-  { id: "earrings", icon: "💎", name: "أقراط" },
-  { id: "goggles",  icon: "🥽", name: "نظارة المختبر" },
-  { id: "crown",    icon: "👑", name: "تاج نجمة العلوم" },
+// المجموعات ذات الاختيار الواحد (تسريحة، لون الشعر، لون العيون، الخلفية): اختيار جديد يستبدل القديم
+window.TOUCH_GROUPS = [
+  { id: "style", title: "💇‍♀️ تسريحة الشعر", exclusive: true, items: [
+    { id: "comb", icon: "💇‍♀️", name: "تمشيط وفرد" },
+    { id: "braid", icon: "🪢", name: "ضفيرة جانبية" },
+    { id: "bun", icon: "🍩", name: "كعكة" } ] },
+  { id: "hair", title: "🎨 لون الشعر", exclusive: true, items: [
+    { id: "hair-black", color: "#1b1411", name: "أسود" },
+    { id: "hair-brown", color: "#6b3f22", name: "بنّي" },
+    { id: "hair-honey", color: "#b9803d", name: "عسلي" },
+    { id: "hair-auburn", color: "#9a3a1c", name: "كستنائي" },
+    { id: "hair-pink", color: "#e47aa3", name: "وردي" },
+    { id: "hair-purple", color: "#8a63d2", name: "بنفسجي" } ] },
+  { id: "eyes", title: "👁️ لون العيون", exclusive: true, items: [
+    { id: "eye-honey", color: "#a8742c", name: "عسلي" },
+    { id: "eye-green", color: "#3f8f5a", name: "أخضر" },
+    { id: "eye-blue", color: "#3b7fc4", name: "أزرق" } ] },
+  { id: "makeup", title: "💄 مكياج", items: [
+    { id: "blush", icon: "🌸", name: "أحمر خدود" },
+    { id: "lips", icon: "💄", name: "أحمر شفاه" },
+    { id: "lashes", icon: "✨", name: "كحل ورموش" },
+    { id: "shadow", icon: "🎨", name: "ظل عيون" } ] },
+  { id: "acc", title: "🎀 إكسسوارات", items: [
+    { id: "bow", icon: "🎀", name: "فيونكة" },
+    { id: "flower", icon: "🌼", name: "وردة" },
+    { id: "earrings", icon: "💎", name: "أقراط" },
+    { id: "goggles", icon: "🥽", name: "نظارة المختبر" },
+    { id: "crown", icon: "👑", name: "تاج نجمة العلوم" } ] },
+  { id: "bg", title: "🖼️ الخلفية", exclusive: true, items: [
+    { id: "bg-pink", color: "#ffd9e8", name: "وردية" },
+    { id: "bg-mint", color: "#d4f3e6", name: "نعناعية" },
+    { id: "bg-sky", color: "#d6ebff", name: "سماوية" },
+    { id: "bg-gold", color: "#fff0c2", name: "ذهبية" } ] },
 ];
+window.TOUCHES = TOUCH_GROUPS.flatMap(g => g.items.map(i => ({ ...i, group: g.id })));
 
 window.avatarSVG = function (look, opts) {
   const L = new Set(look || []);
   const o = Object.assign({ bg: true, id: "a" + Math.random().toString(36).slice(2, 7) }, opts || {});
-  const HAIR = "#3a2318", HAIR2 = "#5a3624", SKIN = "#f7d2b4", SKIN2 = "#eab896";
-  const combed = L.has("comb");
+  const find = (g, def) => { const it = TOUCH_GROUPS.find(x => x.id === g).items.find(i => L.has(i.id)); return it ? it.color : def; };
+  const HAIR = find("hair", "#3a2318");
+  const shade = (hex, k) => { const n = parseInt(hex.slice(1), 16); const f = (c) => Math.max(0, Math.min(255, Math.round(c * k))); return "#" + [n >> 16, (n >> 8) & 255, n & 255].map(c => f(c).toString(16).padStart(2, "0")).join(""); };
+  const HAIR2 = shade(HAIR, 1.35), HAIRD = shade(HAIR, 0.75);
+  const EYE = find("eyes", "#3b2a20");
+  const BG = find("bg", null);
+  const SKIN = "#f7d2b4", SKIN2 = "#eab896";
+  const style = L.has("bun") ? "bun" : L.has("braid") ? "braid" : L.has("comb") ? "comb" : "messy";
+  const neat = style !== "messy";
 
-  // شعر منكوش: حواف مسننة حول الرأس
   const spiky = (cx, cy, rx, ry, a0, a1, n, k) => {
     let d = "";
     for (let i = 0; i <= n; i++) {
-      const a = (a0 + (a1 - a0) * i / n) * Math.PI / 180;
-      const r = i % 2 ? k : 1;
-      const x = cx + Math.cos(a) * rx * r, y = cy + Math.sin(a) * ry * r;
-      d += (i ? " L" : "M") + x.toFixed(1) + " " + y.toFixed(1);
+      const a = (a0 + (a1 - a0) * i / n) * Math.PI / 180, r = i % 2 ? k : 1;
+      d += (i ? " L" : "M") + (cx + Math.cos(a) * rx * r).toFixed(1) + " " + (cy + Math.sin(a) * ry * r).toFixed(1);
     }
     return d;
   };
 
   const s = [];
   s.push(`<svg viewBox="0 0 240 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="صورة الطالبة">`);
-  s.push(`<defs><radialGradient id="${o.id}g" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#fdf2ff"/><stop offset="1" stop-color="#e9e2fb"/></radialGradient>
+  s.push(`<defs><radialGradient id="${o.id}g" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#fdf2ff"/><stop offset="1" stop-color="${BG || "#e9e2fb"}"/></radialGradient>
     <clipPath id="${o.id}c"><circle cx="120" cy="130" r="120"/></clipPath></defs>`);
   s.push(`<g clip-path="url(#${o.id}c)">`);
-  if (o.bg) s.push(`<circle cx="120" cy="130" r="120" fill="url(#${o.id}g)"/>`);
+  if (o.bg) s.push(`<circle cx="120" cy="130" r="120" fill="${BG ? BG : `url(#${o.id}g)`}"/>`);
+  if (o.bg && BG) s.push(`<circle cx="40" cy="60" r="5" fill="#fff" opacity=".8"/><circle cx="205" cy="190" r="4" fill="#fff" opacity=".8"/><circle cx="210" cy="70" r="3" fill="#fff" opacity=".8"/>`);
 
   // الشعر الخلفي
-  if (combed) {
-    s.push(`<path d="M60 122 C54 58 90 36 120 36 C152 36 188 58 180 124 L188 214 C172 224 152 218 150 214 L150 150 L90 150 L90 214 C86 220 66 224 52 214 Z" fill="${HAIR}"/>`);
-  } else {
+  if (style === "messy") {
     s.push(`<path d="${spiky(120, 112, 86, 80, 150, 390, 26, 0.8)} Z" fill="${HAIR}"/>`);
     s.push(`<path d="${spiky(120, 150, 74, 62, 95, 175, 8, 0.82)} L120 150 Z" fill="${HAIR}"/>`);
     s.push(`<path d="${spiky(120, 150, 74, 62, 5, 85, 8, 0.82)} L120 150 Z" fill="${HAIR}"/>`);
+  } else if (style === "comb") {
+    s.push(`<path d="M60 122 C54 58 90 36 120 36 C152 36 188 58 180 124 L188 214 C172 224 152 218 150 214 L150 150 L90 150 L90 214 C86 220 66 224 52 214 Z" fill="${HAIR}"/>`);
+  } else if (style === "bun") {
+    s.push(`<circle cx="120" cy="34" r="26" fill="${HAIR}"/><path d="M100 30 Q120 18 140 30" fill="none" stroke="${HAIR2}" stroke-width="3" stroke-linecap="round"/>`);
+    s.push(`<path d="M62 124 C56 62 90 44 120 44 C150 44 184 62 178 124 Z" fill="${HAIR}"/>`);
+  } else { // braid
+    s.push(`<path d="M62 124 C56 60 90 40 120 40 C150 40 184 60 178 124 Z" fill="${HAIR}"/>`);
   }
 
   // الجسم: معطف المختبر
@@ -52,33 +86,27 @@ window.avatarSVG = function (look, opts) {
   s.push(`<rect x="148" y="228" width="26" height="18" rx="3" fill="none" stroke="#d9dcea" stroke-width="2"/><rect x="153" y="222" width="3" height="14" rx="1.5" fill="#1f8a8a"/><rect x="160" y="224" width="3" height="12" rx="1.5" fill="#e39a4f"/>`);
   s.push(`<rect x="106" y="168" width="28" height="32" rx="10" fill="${SKIN2}"/>`);
 
+  // الضفيرة الجانبية (فوق الكتف)
+  if (style === "braid") {
+    for (let i = 0; i < 6; i++) s.push(`<ellipse cx="${66 - i * 1.5}" cy="${142 + i * 17}" rx="13" ry="11" fill="${i % 2 ? HAIRD : HAIR}"/>`);
+    s.push(`<rect x="51" y="236" width="18" height="7" rx="3" fill="#ff6f9f"/><path d="M60 243 l-6 14 M60 243 l0 16 M60 243 l6 14" stroke="${HAIR}" stroke-width="4" stroke-linecap="round"/>`);
+  }
+
   // الأذنان والأقراط
   s.push(`<circle cx="67" cy="128" r="11" fill="${SKIN2}"/><circle cx="173" cy="128" r="11" fill="${SKIN2}"/>`);
-  if (L.has("earrings")) {
-    for (const x of [66, 174]) s.push(`<circle cx="${x}" cy="142" r="3.5" fill="#e0a624"/><path d="M${x} 145 L${x - 6} 156 L${x} 164 L${x + 6} 156 Z" fill="#5ec8e5" stroke="#e0a624" stroke-width="1.5"/>`);
-  }
+  if (L.has("earrings")) for (const x of [66, 174]) s.push(`<circle cx="${x}" cy="142" r="3.5" fill="#e0a624"/><path d="M${x} 145 L${x - 6} 156 L${x} 164 L${x + 6} 156 Z" fill="#5ec8e5" stroke="#e0a624" stroke-width="1.5"/>`);
 
   // الوجه
   s.push(`<ellipse cx="120" cy="122" rx="53" ry="58" fill="${SKIN}"/>`);
-
-  // ظل العيون
   if (L.has("shadow")) s.push(`<ellipse cx="98" cy="117" rx="14" ry="8" fill="#9b6fd8" opacity=".55"/><ellipse cx="142" cy="117" rx="14" ry="8" fill="#9b6fd8" opacity=".55"/>`);
-
-  // العينان
-  for (const x of [98, 142]) {
-    s.push(`<ellipse cx="${x}" cy="125" rx="10" ry="11" fill="#fff"/><circle cx="${x}" cy="127" r="6.5" fill="#3b2a20"/><circle cx="${x + 2.5}" cy="124" r="2.2" fill="#fff"/>`);
-  }
+  for (const x of [98, 142]) s.push(`<ellipse cx="${x}" cy="125" rx="10" ry="11" fill="#fff"/><circle cx="${x}" cy="127" r="6.5" fill="${EYE}"/><circle cx="${x}" cy="127" r="3" fill="#1d1410"/><circle cx="${x + 2.5}" cy="124" r="2.2" fill="#fff"/>`);
   if (L.has("lashes")) {
     s.push(`<path d="M87 121 Q98 110 110 121" fill="none" stroke="#1d1410" stroke-width="3.2" stroke-linecap="round"/><path d="M131 121 Q142 110 154 121" fill="none" stroke="#1d1410" stroke-width="3.2" stroke-linecap="round"/>`);
     s.push(`<path d="M88 120 l-5 -4 M90 117 l-4 -6 M150 117 l4 -6 M153 120 l5 -4" stroke="#1d1410" stroke-width="2.2" stroke-linecap="round"/>`);
   }
-
-  // الحاجبان: قلِقان قبل التمشيط، مرتاحان بعده
-  s.push(combed
-    ? `<path d="M86 104 Q98 97 110 103 M130 103 Q142 97 154 104" fill="none" stroke="${HAIR}" stroke-width="3.5" stroke-linecap="round"/>`
-    : `<path d="M86 101 Q98 102 110 106 M130 106 Q142 102 154 101" fill="none" stroke="${HAIR}" stroke-width="3.5" stroke-linecap="round"/>`);
-
-  // الأنف والخدود والفم
+  s.push(neat
+    ? `<path d="M86 104 Q98 97 110 103 M130 103 Q142 97 154 104" fill="none" stroke="${HAIRD}" stroke-width="3.5" stroke-linecap="round"/>`
+    : `<path d="M86 101 Q98 102 110 106 M130 106 Q142 102 154 101" fill="none" stroke="${HAIRD}" stroke-width="3.5" stroke-linecap="round"/>`);
   s.push(`<path d="M118 132 Q121 142 116 146" fill="none" stroke="${SKIN2}" stroke-width="3" stroke-linecap="round"/>`);
   if (L.has("blush")) s.push(`<circle cx="84" cy="146" r="11" fill="#ff8fa6" opacity=".5"/><circle cx="156" cy="146" r="11" fill="#ff8fa6" opacity=".5"/>`);
   s.push(L.has("lips")
@@ -86,7 +114,7 @@ window.avatarSVG = function (look, opts) {
     : `<path d="M106 157 Q120 168 134 157" fill="none" stroke="#b5654f" stroke-width="3.2" stroke-linecap="round"/>`);
 
   // الغرة
-  if (combed) {
+  if (neat) {
     s.push(`<path d="M64 116 C66 66 98 50 124 52 C154 54 178 72 176 116 C164 92 144 78 120 80 C106 82 94 92 90 106 C84 96 76 98 64 116 Z" fill="${HAIR}"/>`);
     s.push(`<path d="M100 60 C112 56 132 56 146 62" fill="none" stroke="${HAIR2}" stroke-width="3" stroke-linecap="round"/>`);
   } else {
@@ -95,21 +123,22 @@ window.avatarSVG = function (look, opts) {
     s.push(`<text x="196" y="72" font-size="30" font-weight="700" fill="#e39a4f" font-family="Almarai,sans-serif">؟</text><text x="30" y="58" font-size="22" font-weight="700" fill="#1f8a8a" font-family="Almarai,sans-serif">؟</text>`);
   }
 
-  // الفيونكة
   if (L.has("bow")) s.push(`<g transform="translate(70 70) rotate(-20)"><path d="M0 0 L-20 -12 L-20 12 Z M0 0 L20 -12 L20 12 Z" fill="#ff6f9f" stroke="#d94c7d" stroke-width="2" stroke-linejoin="round"/><circle r="6" fill="#d94c7d"/></g>`);
-
-  // نظارة المختبر (مرفوعة فوق الجبهة)
+  if (L.has("flower")) {
+    s.push(`<g transform="translate(170 78)">`);
+    for (let i = 0; i < 5; i++) { const a = i * 72 * Math.PI / 180; s.push(`<circle cx="${(Math.cos(a) * 9).toFixed(1)}" cy="${(Math.sin(a) * 9).toFixed(1)}" r="7.5" fill="#ffd23f" stroke="#f0a500" stroke-width="1"/>`); }
+    s.push(`<circle r="5.5" fill="#f08a24"/></g>`);
+  }
   if (L.has("goggles")) {
     s.push(`<path d="M62 84 Q120 66 178 84" fill="none" stroke="#2f6f7a" stroke-width="6"/>`);
     s.push(`<rect x="82" y="66" width="34" height="24" rx="10" fill="#bfeef2" fill-opacity=".85" stroke="#2f6f7a" stroke-width="4"/><rect x="124" y="66" width="34" height="24" rx="10" fill="#bfeef2" fill-opacity=".85" stroke="#2f6f7a" stroke-width="4"/>`);
-    s.push(`<rect x="114" y="74" width="12" height="5" rx="2" fill="#2f6f7a"/><path d="M89 72 l8 0" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M131 72 l8 0" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`);
+    s.push(`<rect x="114" y="74" width="12" height="5" rx="2" fill="#2f6f7a"/><path d="M89 72 l8 0 M131 72 l8 0" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`);
   }
-
-  // التاج
   if (L.has("crown")) {
-    s.push(`<path d="M88 52 L92 22 L106 38 L120 14 L134 38 L148 22 L152 52 Z" fill="#f2c230" stroke="#c9961a" stroke-width="3" stroke-linejoin="round"/>`);
+    const cy = style === "bun" ? 6 : 0;
+    s.push(`<g transform="translate(0 ${cy})"><path d="M88 52 L92 22 L106 38 L120 14 L134 38 L148 22 L152 52 Z" fill="#f2c230" stroke="#c9961a" stroke-width="3" stroke-linejoin="round"/>`);
     s.push(`<path d="M120 26 l3.5 7 7.6 1 -5.5 5.3 1.3 7.6 -6.9 -3.6 -6.9 3.6 1.3 -7.6 -5.5 -5.3 7.6 -1 Z" fill="#fff6c9"/>`);
-    s.push(`<circle cx="92" cy="22" r="4" fill="#ff6f9f"/><circle cx="148" cy="22" r="4" fill="#5ec8e5"/>`);
+    s.push(`<circle cx="92" cy="22" r="4" fill="#ff6f9f"/><circle cx="148" cy="22" r="4" fill="#5ec8e5"/></g>`);
   }
   s.push(`</g></svg>`);
   return s.join("");

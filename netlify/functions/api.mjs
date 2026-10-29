@@ -2,7 +2,15 @@ import { getStore } from "@netlify/blobs";
 import { QUESTIONS, SKILLS, SECONDS_PER_Q, publicQuestion } from "../../lib/questions.mjs";
 
 const CLASSES = ["3-1", "3-2", "3-3"];
-const TOUCHES = ["comb", "blush", "lips", "lashes", "shadow", "bow", "earrings", "goggles", "crown"];
+const GROUPS = {
+  style: { ex: true, items: ["comb", "braid", "bun"] },
+  hair: { ex: true, items: ["hair-black", "hair-brown", "hair-honey", "hair-auburn", "hair-pink", "hair-purple"] },
+  eyes: { ex: true, items: ["eye-honey", "eye-green", "eye-blue"] },
+  makeup: { ex: false, items: ["blush", "lips", "lashes", "shadow"] },
+  acc: { ex: false, items: ["bow", "flower", "earrings", "goggles", "crown"] },
+  bg: { ex: true, items: ["bg-pink", "bg-mint", "bg-sky", "bg-gold"] },
+};
+const groupOf = (t) => Object.values(GROUPS).find(g => g.items.includes(t));
 const store = () => getStore({ name: "salon-attempts-v1", consistency: "strong" });
 const QMAP = Object.fromEntries(QUESTIONS.map(q => [q.id, q]));
 const LIMIT_MS = SECONDS_PER_Q * 1000;
@@ -23,7 +31,7 @@ const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) {
 const summary = (r) => {
   const vals = Object.values(r.answers || {});
   return {
-    name: r.name, cls: r.cls, look: r.look || [],
+    name: r.name, cls: r.cls, look: r.look || [], used: r.used || 0,
     correct: vals.filter(v => v.ok).length, answered: vals.length, total: r.order.length,
     points: vals.reduce((s, v) => s + (v.pts || 0), 0), timeMs: vals.reduce((s, v) => s + (v.ms || 0), 0),
     done: r.status === "done", startedAt: r.startedAt, finishedAt: r.finishedAt || null,
@@ -97,18 +105,20 @@ async function answer(body) {
   return json({ ok, ans: q.ans, exp: q.exp, pts, sum: summary(rec) });
 }
 
-// لمسة الصالون: لمسة واحدة لكل إجابة صحيحة
+// لمسة الصالون: لمسة واحدة لكل إجابة صحيحة (التسريحة والألوان والخلفية: اختيار جديد يستبدل القديم)
 async function touch(body) {
   const [rec, key] = await load(body);
   if (!rec) return json({ error: "جلسة غير صالحة" }, 403);
   const t = String(body.touch || "");
-  rec.look ||= [];
+  rec.look ||= []; rec.used ||= 0;
   const correct = Object.values(rec.answers).filter(a => a.ok).length;
-  if (TOUCHES.includes(t) && !rec.look.includes(t) && rec.look.length < correct) {
-    rec.look.push(t);
+  const g = groupOf(t);
+  if (g && !rec.look.includes(t) && rec.used < correct) {
+    if (g.ex) rec.look = rec.look.filter(x => !g.items.includes(x));
+    rec.look.push(t); rec.used++;
     await store().setJSON(key, rec);
   }
-  return json({ look: rec.look });
+  return json({ look: rec.look, used: rec.used });
 }
 
 async function me(url) {

@@ -43,12 +43,15 @@
 .fb .exp{margin-top:6px;font-size:15.5px}
 .fb .exp b{color:var(--purple)}
 .picker{margin-top:14px;background:#fff;border-radius:14px;padding:12px;border:1.5px dashed #f2a3c3}
-.picker h4{margin:0 0 8px;color:#b8326a;font-size:16px}
-.picker .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.picker button{border:1.5px solid #f6d3e2;background:#fff8fb;border-radius:12px;padding:8px 4px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:2px}
-.picker button .e{font-size:24px;line-height:1.2}
+.picker h4{margin:0 0 6px;color:#b8326a;font-size:16px}
+.picker .grp{margin-top:8px}
+.picker .gt{font-size:13.5px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.picker .row{display:flex;flex-wrap:wrap;gap:6px}
+.picker button{border:1.5px solid #f6d3e2;background:#fff8fb;border-radius:12px;padding:6px 10px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px}
+.picker button .e{font-size:19px;line-height:1}
+.picker button .sw{width:20px;height:20px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px #d9cfe3;flex:none}
 .picker button:hover{border-color:#ff6f9f}
-.picker button.used{opacity:.35;cursor:default}
+.picker button.used{opacity:.4;cursor:default}
 .nextbtn{margin-top:12px}
 .sparkle{position:fixed;pointer-events:none;font-size:26px;animation:fly 1s ease-out forwards;z-index:9}
 @keyframes fly{from{opacity:1;transform:translate(0,0) scale(.6)}to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3)}}
@@ -108,7 +111,7 @@
     <div class="how">
       <div><span class="i">✍️</span><p style="margin:0"><b>اكتبي اسمك الثلاثي واختاري فصلك</b><span>اكتبيه بدقة، فلكل طالبة محاولة واحدة فقط.</span></p></div>
       <div><span class="i">⏱️</span><p style="margin:0"><b>أجيبي عن ٢٢ سؤالًا من وحدة الوراثة</b><span>لكل سؤال ٤٥ ثانية. الإجابة الصحيحة = ١٠٠ نقطة + مكافأة سرعة حتى ٥٠ نقطة.</span></p></div>
-      <div><span class="i">💇‍♀️</span><p style="margin:0"><b>كل إجابة صحيحة تُدخلك الصالون</b><span>اختاري بنفسك لمسة جمال لصورتك؛ تبدئين بشعر منكوش وتنتهين نجمة علوم متوّجة 👑</span></p></div>
+      <div><span class="i">💇‍♀️</span><p style="margin:0"><b>كل إجابة صحيحة تُدخلك الصالون</b><span>اختاري بنفسك لمسة لصورتك: تسريحة، لون الشعر، لون العيون، مكياج، إكسسوارات، أو خلفية. تبدئين بشعر منكوش وتنتهين نجمة علوم متوّجة 👑</span></p></div>
       <div><span class="i">💡</span><p style="margin:0"><b>بعد كل إجابة يظهر شرح قصير</b><span>اقرئيه جيدًا، ثم اضغطي «السؤال التالي». الوقت لا يُحسب أثناء الشرح.</span></p></div>
       <div><span class="i">🏆</span><p style="margin:0"><b>النتائج تُحفظ تلقائيًا</b><span>تظهر لمعلمتك، وتُتوَّج الثلاث الأوائل على منصة التتويج حسب الدقة والسرعة.</span></p></div>
     </div>
@@ -149,8 +152,8 @@
         <div class="msg" id="fb-msg"></div>
         <div class="exp" id="fb-exp"></div>
         <div class="picker hidden" id="picker">
-          <h4>✨ ادخلي الصالون واختاري لمسة لصورتك</h4>
-          <div class="grid" id="pgrid"></div>
+          <h4>✨ ادخلي الصالون واختاري لمسة واحدة لصورتك</h4>
+          <div id="pgrid"></div>
         </div>
         <button class="btn nextbtn" id="nextbtn">السؤال التالي ←</button>
       </div>
@@ -195,7 +198,7 @@ const MSG_NO = ["لا بأس! حتى مندل جرّب آلاف النباتات
 let cls = null, S = null, Q = null, timerId = null, deadline = 0, locked = false, SEC = 45;
 
 $("hero-av").innerHTML = avatarSVG([]);
-$("strip").innerHTML = TOUCHES.map(t => `<span>${t.icon} ${t.name}</span>`).join("");
+$("strip").innerHTML = TOUCH_GROUPS.map(g => `<span>${g.title}</span>`).join("");
 $("howbtn").onclick = () => show("s-how");
 $("howback").onclick = () => show("s-entry");
 document.querySelectorAll("#classes button").forEach(b => b.onclick = () => {
@@ -215,7 +218,7 @@ const showErr = (m) => { $("err").textContent = m; $("err").style.display = m ? 
 
 function drawAvatar(pop) {
   $("g-av").innerHTML = avatarSVG(S.look, { id: "g" });
-  $("h-looks").textContent = `لمسات الصالون: ${AR(S.look.length)} من ${AR(TOUCHES.length)}`;
+  $("h-looks").textContent = `💖 لمسات الصالون: ${AR(S.used || 0)}`;
   if (pop) { $("g-av").classList.remove("pop"); void $("g-av").offsetWidth; $("g-av").classList.add("pop"); sparkle($("g-av")); }
 }
 function sparkle(el) {
@@ -237,7 +240,7 @@ $("go").onclick = async () => {
   $("go").disabled = true;
   try {
     const res = await api("start", { name, cls, token: saved && saved.token });
-    S = { key: res.key, token: res.token, name, cls, look: res.sum.look || [], pts: res.sum.points, total: res.sum.total };
+    S = { key: res.key, token: res.token, name, cls, look: res.sum.look || [], used: res.sum.used || 0, pts: res.sum.points, total: res.sum.total };
     SEC = res.seconds || 45;
     ls.set("salon-wiratha", { token: res.token, key: res.key });
     $("h-name").textContent = name; $("h-cls").textContent = CLS_AR[cls]; $("h-pts").textContent = AR(S.pts);
@@ -304,27 +307,33 @@ async function pick(k) {
   $("fb-exp").innerHTML = "<b>الشرح: </b>"; $("fb-exp").append(res.exp || "");
   $("nextbtn").classList.remove("hidden"); $("nextbtn").disabled = false;
   $("nextbtn").textContent = res.sum.answered >= res.sum.total ? "عرض نتيجتي 🎉" : "السؤال التالي ←";
-  const remaining = TOUCHES.filter(t => !S.look.includes(t.id));
-  if (res.ok && remaining.length) {
+  if (res.ok) {
     $("picker").classList.remove("hidden");
     $("pgrid").innerHTML = "";
-    TOUCHES.forEach(t => {
-      const b = document.createElement("button"); const used = S.look.includes(t.id);
-      b.className = used ? "used" : ""; b.disabled = used;
-      b.innerHTML = `<span class="e">${t.icon}</span>${t.name}`;
-      b.onclick = () => chooseTouch(t.id);
-      $("pgrid").appendChild(b);
+    TOUCH_GROUPS.forEach(g => {
+      const grp = document.createElement("div"); grp.className = "grp";
+      grp.innerHTML = `<div class="gt">${g.title}</div><div class="row"></div>`;
+      g.items.forEach(t => {
+        const b = document.createElement("button"); const used = S.look.includes(t.id);
+        b.className = used ? "used" : ""; b.disabled = used;
+        b.innerHTML = (t.color ? `<span class="sw" style="background:${t.color}"></span>` : `<span class="e">${t.icon}</span>`) + t.name;
+        b.onclick = () => chooseTouch(t.id);
+        grp.lastChild.appendChild(b);
+      });
+      $("pgrid").appendChild(grp);
     });
   }
   $("fb").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 async function chooseTouch(id) {
-  if (S.look.includes(id)) return;
-  S.look.push(id); drawAvatar(true);
+  if (S.look.includes(id) || $("picker").classList.contains("hidden")) return;
+  const t = TOUCHES.find(x => x.id === id), g = TOUCH_GROUPS.find(x => x.id === t.group);
+  if (g.exclusive) S.look = S.look.filter(x => !g.items.some(i => i.id === x));
+  S.look.push(id); S.used = (S.used || 0) + 1; drawAvatar(true);
   $("picker").classList.add("hidden");
-  $("fb-msg").textContent = S.look.length === TOUCHES.length ? "اكتملت إطلالتك! أنتِ نجمة العلوم 👑" : "واو! إطلالة جديدة 💖";
-  try { const r = await api("touch", { key: S.key, token: S.token, touch: id }); S.look = r.look; } catch {}
+  $("fb-msg").textContent = pickOne(["واو! إطلالة جديدة 💖", "تألّقي يا نجمة العلوم ✨", "الصالون يليق بك 💇‍♀️", "جمال وعلم معًا 🌟"]);
+  try { const r = await api("touch", { key: S.key, token: S.token, touch: id }); S.look = r.look; S.used = r.used; } catch {}
 }
 $("nextbtn").onclick = () => nextQ();
 
