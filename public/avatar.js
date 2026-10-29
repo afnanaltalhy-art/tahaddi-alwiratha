@@ -61,9 +61,10 @@ window.avatarSVG = function (look, opts) {
 
   // الشعر الخلفي
   if (style === "messy") {
-    // شعر منكوش طويل ينسدل حتى الكتفين مع خصلات متطايرة
-    s.push(`<path d="M78 206 L46 214 L58 194 L32 188 L50 170 L26 158 L46 144 L24 128 L44 116 L28 98 L50 92 L40 70 L64 72 L58 48 L84 58 L84 32 L104 48 L112 20 L126 44 L142 22 L148 48 L172 32 L168 60 L194 52 L182 78 L210 80 L190 100 L214 116 L192 126 L214 144 L192 156 L212 172 L188 180 L206 202 L180 200 L194 216 L162 206 L160 150 L80 150 Z" fill="${HAIR}" stroke="${HAIRD}" stroke-width="2" stroke-linejoin="round"/>`);
-    s.push(`<path d="M100 42 q-8 -16 4 -26 M132 30 q6 -14 -4 -22 M152 46 q16 -8 12 -24 q-2 -7 7 -9 M66 76 q-18 -4 -24 -18 M180 70 q16 -2 24 -16 M40 120 q-14 2 -20 -8 M200 130 q14 0 18 -10" fill="none" stroke="${HAIR}" stroke-width="3.5" stroke-linecap="round"/>`);
+    // شعر منفوش ناعم (تجعيدات) ينسدل حتى الكتفين
+    s.push(`<g fill="${HAIR}"><ellipse cx="120" cy="112" rx="70" ry="72"/><circle cx="120" cy="46" r="30"/><circle cx="92" cy="54" r="28"/><circle cx="148" cy="54" r="28"/><circle cx="70" cy="72" r="26"/><circle cx="170" cy="72" r="26"/><circle cx="56" cy="98" r="25"/><circle cx="184" cy="98" r="25"/><circle cx="50" cy="126" r="24"/><circle cx="190" cy="126" r="24"/><circle cx="52" cy="154" r="24"/><circle cx="188" cy="154" r="24"/><circle cx="58" cy="180" r="22"/><circle cx="182" cy="180" r="22"/><circle cx="70" cy="202" r="18"/><circle cx="170" cy="202" r="18"/></g>`);
+    s.push(`<path d="M106 20 q-6 -12 6 -16 M136 20 q10 -8 2 -16 M58 52 q-12 -4 -12 -16 M184 52 q12 -4 12 -16" fill="none" stroke="${HAIR}" stroke-width="3.5" stroke-linecap="round"/>`);
+    s.push(`<path d="M44 140 q8 6 2 14 M196 140 q-8 6 -2 14 M60 70 q10 -2 12 8 M180 70 q-10 -2 -12 8" fill="none" stroke="${HAIR2}" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>`);
   } else if (style === "comb") {
     s.push(`<path d="M60 122 C54 58 90 36 120 36 C152 36 188 58 180 124 L188 214 C172 224 152 218 150 214 L150 150 L90 150 L90 214 C86 220 66 224 52 214 Z" fill="${HAIR}"/>`);
   } else if (style === "bun") {
@@ -112,7 +113,8 @@ window.avatarSVG = function (look, opts) {
     s.push(`<path d="M64 116 C66 66 98 50 124 52 C154 54 178 72 176 116 C164 92 144 78 120 80 C106 82 94 92 90 106 C84 96 76 98 64 116 Z" fill="${HAIR}"/>`);
     s.push(`<path d="M100 60 C112 56 132 56 146 62" fill="none" stroke="${HAIR2}" stroke-width="3" stroke-linecap="round"/>`);
   } else {
-    s.push(`<path d="M62 120 L64 84 L80 100 L82 62 L100 92 L110 54 L120 90 L132 56 L140 92 L158 62 L160 100 L176 84 L178 120 C170 94 148 84 120 84 C92 84 70 94 62 120 Z" fill="${HAIR}" stroke="${HAIRD}" stroke-width="1.5" stroke-linejoin="round"/>`);
+    s.push(`<g fill="${HAIR}"><circle cx="84" cy="80" r="16"/><circle cx="104" cy="72" r="17"/><circle cx="124" cy="70" r="17"/><circle cx="144" cy="74" r="16"/><circle cx="161" cy="86" r="14"/><circle cx="72" cy="96" r="13"/><circle cx="169" cy="102" r="12"/></g>`);
+    s.push(`<path d="M92 76 q8 -6 14 2 M126 66 q8 -4 12 4 M150 80 q6 0 8 6" fill="none" stroke="${HAIR2}" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>`);
   }
 
   if (L.has("bow")) s.push(`<g transform="translate(70 70) rotate(-20)"><path d="M0 0 L-20 -12 L-20 12 Z M0 0 L20 -12 L20 12 Z" fill="${C("bow", "#ff6f9f")}" stroke="${shade(C("bow", "#ff6f9f"), .8)}" stroke-width="2" stroke-linejoin="round"/><circle r="6" fill="${shade(C("bow", "#ff6f9f"), .8)}"/></g>`);
