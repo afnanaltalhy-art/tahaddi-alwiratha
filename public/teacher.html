@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>لوحة المعلمة | تحدّي الوراثة</title>
+<title>لوحة المعلمة | صالون نجمات العلوم</title>
 <link rel="stylesheet" href="style.css">
 <style>
 .wrap{max-width:1040px}
@@ -36,6 +36,27 @@ table.rank tr.top1 td{background:#fff8e3}
 .qrow .v{width:44px;text-align:left;font-weight:700;flex:none}
 h3{margin:0 0 8px;color:var(--purple)}
 .lock{text-align:center;padding:40px 10px;color:var(--red);font-weight:700}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:14px;margin:6px 0 16px;min-height:0}
+.pd{flex:1;max-width:210px;text-align:center}
+.pd .av{width:78%;margin:0 auto -6px;position:relative}
+.pd .nm{font-weight:700;font-size:14.5px;line-height:1.4;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pd .sc{font-size:12.5px;color:var(--muted)}
+.pd .step{border-radius:14px 14px 0 0;color:#fff;font-weight:700;font-size:30px;display:flex;align-items:flex-start;justify-content:center;padding-top:8px;margin-top:8px}
+.pd.p1 .step{height:120px;background:linear-gradient(#f2c230,#d9a521)}
+.pd.p2 .step{height:88px;background:linear-gradient(#b9c1d1,#9aa3b5)}
+.pd.p3 .step{height:64px;background:linear-gradient(#d99a63,#c07c46)}
+.pd.p1 .av{width:92%}
+.show-mode{position:fixed;inset:0;z-index:20;background:radial-gradient(circle at 50% 30%,#fdf2ff,#e4dcfa);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.show-mode h2{font-size:clamp(26px,4vw,48px);color:var(--purple);margin:0 0 4px}
+.show-mode .sub{color:var(--muted);font-size:clamp(14px,1.8vw,22px);margin-bottom:10px}
+.show-mode .podium{width:min(1000px,100%)}
+.show-mode .pd{max-width:320px}
+.show-mode .pd .nm{font-size:clamp(15px,2vw,26px);white-space:normal}
+.show-mode .pd .sc{font-size:clamp(12px,1.4vw,18px)}
+.show-mode .pd.p1 .step{height:clamp(110px,20vh,220px)}.show-mode .pd.p2 .step{height:clamp(80px,14vh,160px)}.show-mode .pd.p3 .step{height:clamp(60px,10vh,120px)}
+.show-mode .close{position:absolute;top:14px;left:14px}
+.confetti{position:fixed;top:-20px;font-size:22px;animation:fall linear forwards;pointer-events:none;z-index:21}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
 @media (max-width:720px){.tiles{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
 @media print{.tabs,.tools .r,.del,.live{display:none!important}body{background:#fff}.card,.report-head{box-shadow:none}}
 </style>
@@ -62,8 +83,8 @@ h3{margin:0 0 8px;color:var(--purple)}
   <section class="card" id="main">
     <div class="title" style="margin-bottom:14px">
       <span class="chip">لوحة المعلمة · رابط خاص</span>
-      <h1>نتائج تحدّي الوراثة</h1>
-      <p>الوحدة الثانية: الوراثة — مهارات نافس · ثالث متوسط</p>
+      <h1>نتائج صالون نجمات العلوم</h1>
+      <p>مسابقة وحدة الوراثة — مهارات نافس · ثالث متوسط</p>
     </div>
     <div class="tiles">
       <div class="tile"><b id="t-done">–</b>أنهت التحدّي</div>
@@ -77,9 +98,11 @@ h3{margin:0 0 8px;color:var(--purple)}
       <button data-c="3-2">ثالث ٢</button>
       <button data-c="3-3">ثالث ٣</button>
     </div>
+    <div class="podium" id="podium"></div>
     <div class="tools">
       <span class="live" id="live">يتحدّث تلقائيًّا كل ١٥ ثانية</span>
       <div class="r">
+        <button class="sbtn" id="crown">🏆 عرض التتويج</button>
         <button class="sbtn" id="csv">تصدير Excel</button>
         <button class="sbtn" onclick="print()">طباعة</button>
       </div>
@@ -99,6 +122,13 @@ h3{margin:0 0 8px;color:var(--purple)}
   </section>
 </div>
 
+<div class="show-mode hidden" id="show">
+  <button class="sbtn close" id="closeShow">إغلاق ✕</button>
+  <h2>🏆 منصة تتويج نجمات العلوم 🏆</h2>
+  <div class="sub" id="show-sub"></div>
+  <div class="podium" id="podium2"></div>
+</div>
+<script src="avatar.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const AR = (n) => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
@@ -142,13 +172,16 @@ function render() {
   $("t-avg").textContent = done.length ? AR(Math.round(done.reduce((s, x) => s + x.correct / x.total, 0) / done.length * 100)) + "٪" : "–";
   $("t-top").textContent = done[0] ? done[0].name : "–";
 
+  $("podium").innerHTML = podiumHTML(done, "p");
+  if (!$("show").classList.contains("hidden")) renderShow();
+
   const rows = [...done.map((x, i) => ({ ...x, r: i + 1 })), ...active.map(x => ({ ...x, r: null }))];
   $("rows").innerHTML = rows.length ? rows.map(x => `
     <tr class="${x.r === 1 ? "top1" : ""}">
       <td>${x.r ? `<span class="medal ${x.r <= 3 ? "m" + x.r : ""}">${AR(x.r)}</span>` : "—"}</td>
       <td><b>${esc(x.name)}</b></td>
       <td>${CLS_AR[x.cls] || x.cls}</td>
-      <td>${AR(x.correct)} / ${AR(x.total)}</td>
+      <td>${AR(x.correct)} من ${AR(x.total)}</td>
       <td style="color:${colorOf(x.correct / x.total)};font-weight:700">${AR(Math.round(x.correct / x.total * 100))}٪</td>
       <td>${fmtTime(x.timeMs)}</td>
       <td><b>${AR(x.points)}</b></td>
@@ -171,6 +204,31 @@ function render() {
     return `<div class="qrow" title="${esc(s.q.text)}"><span class="t">س${AR(n)}: ${esc(s.q.text)}</span><span class="bar2"><i style="width:${p * 100}%;background:${colorOf(p)}"></i></span><span class="v">${s.n ? AR(Math.round(p * 100)) + "٪" : "–"}</span></div>`;
   }).join("");
 }
+
+function podiumHTML(done, pre) {
+  if (!done.length) return `<p style="color:var(--muted);text-align:center;width:100%">تظهر منصة التتويج عند إنهاء أول طالبة</p>`;
+  const order = [1, 0, 2].filter(i => done[i]);
+  return order.map(i => { const x = done[i];
+    return `<div class="pd p${i + 1}"><div class="av">${avatarSVG(x.look, { id: pre + i })}</div>
+      <div class="nm">${esc(x.name)}</div><div class="sc">${CLS_AR[x.cls] || ""}</div><div class="sc"><b style="color:var(--purple)">${AR(x.points)} نقطة</b></div><div class="sc">${AR(x.correct)} من ${AR(x.total)} صحيحة — ${fmtTime(x.timeMs)}</div>
+      <div class="step">${AR(i + 1)}</div></div>`; }).join("");
+}
+function renderShow() {
+  const { done } = view();
+  $("podium2").innerHTML = podiumHTML(done, "s");
+  $("show-sub").textContent = (filter === "all" ? "جميع الفصول" : CLS_AR[filter]) + " · مسابقة وحدة الوراثة";
+}
+$("crown").onclick = () => {
+  renderShow(); $("show").classList.remove("hidden");
+  try { document.documentElement.requestFullscreen?.(); } catch {}
+  for (let i = 0; i < 40; i++) setTimeout(() => {
+    const c = document.createElement("div"); c.className = "confetti";
+    c.textContent = ["🎉", "⭐", "✨", "💖", "👑", "🎊"][i % 6];
+    c.style.left = Math.random() * 100 + "vw"; c.style.animationDuration = (2.5 + Math.random() * 2) + "s";
+    document.body.appendChild(c); setTimeout(() => c.remove(), 5000);
+  }, i * 90);
+};
+$("closeShow").onclick = () => { $("show").classList.add("hidden"); try { document.fullscreenElement && document.exitFullscreen(); } catch {} };
 
 async function del(key) {
   if (armed !== key) { armed = key; render(); setTimeout(() => { if (armed === key) { armed = null; render(); } }, 4000); return; }

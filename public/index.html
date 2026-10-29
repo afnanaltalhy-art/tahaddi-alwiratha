@@ -3,8 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>تحدّي الوراثة | نافس</title>
+<title>صالون نجمات العلوم | الوراثة</title>
 <link rel="stylesheet" href="style.css">
+<style>
+.hero{display:flex;align-items:center;gap:18px}
+.hero .av{width:150px;flex:none}
+.hero .txt{flex:1}
+.how{display:grid;gap:10px;margin:14px 0 6px}
+.how div{display:flex;gap:12px;align-items:flex-start;background:#f7f8fc;border-radius:14px;padding:12px}
+.how .i{flex:none;width:40px;height:40px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 2px 6px rgba(40,44,90,.08)}
+.how b{display:block}
+.how span{color:var(--muted);font-size:14px}
+.touch-strip{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.touch-strip span{font-size:13px;background:#fff0f6;color:#b8326a;border-radius:99px;padding:3px 10px}
+
+/* شاشة اللعب */
+.game{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+.side{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;display:flex;align-items:center;gap:14px}
+.side .av{width:92px;flex:none;transition:transform .3s}
+.side .av.pop{animation:pop .6s}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.12) rotate(-3deg)}100%{transform:scale(1)}}
+.side .info{flex:1;min-width:0}
+.side .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side .sub{color:var(--muted);font-size:13px}
+.side .pts{font-size:20px}
+.side .looks{font-size:12.5px;color:#b8326a;font-weight:700}
+.main{margin-top:0}
+@media (min-width:900px),(orientation:landscape) and (min-width:700px){
+  .game{grid-template-columns:260px 1fr;align-items:start}
+  .side{flex-direction:column;text-align:center;position:sticky;top:12px;padding:18px}
+  .side .av{width:210px}
+  .side .info{width:100%}
+}
+.fb{margin-top:14px;border-radius:14px;padding:14px;display:none}
+.fb.ok{display:block;background:var(--green-soft)}
+.fb.no{display:block;background:var(--red-soft)}
+.fb .msg{font-weight:700;font-size:18px}
+.fb.ok .msg{color:var(--green)}.fb.no .msg{color:var(--red)}
+.fb .exp{margin-top:6px;font-size:15.5px}
+.fb .exp b{color:var(--purple)}
+.picker{margin-top:14px;background:#fff;border-radius:14px;padding:12px;border:1.5px dashed #f2a3c3}
+.picker h4{margin:0 0 8px;color:#b8326a;font-size:16px}
+.picker .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.picker button{border:1.5px solid #f6d3e2;background:#fff8fb;border-radius:12px;padding:8px 4px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:2px}
+.picker button .e{font-size:24px;line-height:1.2}
+.picker button:hover{border-color:#ff6f9f}
+.picker button.used{opacity:.35;cursor:default}
+.nextbtn{margin-top:12px}
+.sparkle{position:fixed;pointer-events:none;font-size:26px;animation:fly 1s ease-out forwards;z-index:9}
+@keyframes fly{from{opacity:1;transform:translate(0,0) scale(.6)}to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3)}}
+.res-av{width:220px;margin:6px auto 0}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -27,15 +76,18 @@
 
   <!-- التسجيل -->
   <section id="s-entry" class="card">
-    <div class="title">
-      <span class="chip">نافس · علوم ثالث متوسط</span>
-      <h1>تحدّي الوراثة</h1>
-      <p>الوحدة الثانية: الوراثة — أسئلة على مهارات نافس</p>
+    <div class="hero">
+      <div class="av" id="hero-av"></div>
+      <div class="txt">
+        <span class="chip">نافس · علوم ثالث متوسط</span>
+        <h1 style="margin:6px 0 0;color:var(--purple);font-size:26px">صالون نجمات العلوم</h1>
+        <p style="margin:2px 0 0;color:var(--muted)">مسابقة تفاعلية لوحدة الوراثة 🔬 شعرك منكوش من كثرة التفكير؟ كل إجابة صحيحة تُدخلك الصالون!</p>
+      </div>
     </div>
     <div class="rules">
-      <div><b id="r-n">21</b>سؤالًا</div>
-      <div><b>45</b>ثانية لكل سؤال</div>
-      <div><b>1</b>محاولة فقط</div>
+      <div><b id="r-n">٢٢</b>سؤالًا</div>
+      <div><b>٤٥</b>ثانية لكل سؤال</div>
+      <div><b>١</b>محاولة فقط</div>
     </div>
     <label for="name">اسمك الثلاثي</label>
     <input id="name" type="text" autocomplete="off" placeholder="مثال: نورة محمد العتيبي" maxlength="60">
@@ -46,41 +98,72 @@
       <button type="button" data-c="3-3">ثالث ٣</button>
     </div>
     <div class="err" id="err"></div>
-    <button class="btn" id="go">ابدئي التحدّي</button>
-    <p class="foot">النقاط = صحة الإجابة + سرعتها. اكتبي اسمك بدقة؛ لا يمكن إعادة المحاولة.</p>
+    <button class="btn" id="go">ادخلي الصالون ✨</button>
+    <button class="btn ghost" id="howbtn" style="margin-top:10px">كيف نلعب؟</button>
+  </section>
+
+  <!-- كيف نلعب -->
+  <section id="s-how" class="card hidden">
+    <div class="title"><h1>كيف نلعب؟</h1></div>
+    <div class="how">
+      <div><span class="i">✍️</span><p style="margin:0"><b>اكتبي اسمك الثلاثي واختاري فصلك</b><span>اكتبيه بدقة، فلكل طالبة محاولة واحدة فقط.</span></p></div>
+      <div><span class="i">⏱️</span><p style="margin:0"><b>أجيبي عن ٢٢ سؤالًا من وحدة الوراثة</b><span>لكل سؤال ٤٥ ثانية. الإجابة الصحيحة = ١٠٠ نقطة + مكافأة سرعة حتى ٥٠ نقطة.</span></p></div>
+      <div><span class="i">💇‍♀️</span><p style="margin:0"><b>كل إجابة صحيحة تُدخلك الصالون</b><span>اختاري بنفسك لمسة جمال لصورتك؛ تبدئين بشعر منكوش وتنتهين نجمة علوم متوّجة 👑</span></p></div>
+      <div><span class="i">💡</span><p style="margin:0"><b>بعد كل إجابة يظهر شرح قصير</b><span>اقرئيه جيدًا، ثم اضغطي «السؤال التالي». الوقت لا يُحسب أثناء الشرح.</span></p></div>
+      <div><span class="i">🏆</span><p style="margin:0"><b>النتائج تُحفظ تلقائيًا</b><span>تظهر لمعلمتك، وتُتوَّج الثلاث الأوائل على منصة التتويج حسب الدقة والسرعة.</span></p></div>
+    </div>
+    <div class="touch-strip" id="strip"></div>
+    <button class="btn" id="howback">فهمت، لنبدأ!</button>
   </section>
 
   <!-- العد التنازلي -->
   <section id="s-count" class="card hidden"><div class="count" id="count">٣</div></section>
 
-  <!-- السؤال -->
-  <section id="s-q" class="card hidden">
-    <div class="hud">
-      <div class="who"><b id="h-name"></b> · <span id="h-cls"></span></div>
-      <div class="pts"><span id="h-pts">0</span> نقطة</div>
-    </div>
-    <div class="progress"><i id="prog"></i></div>
-    <div class="qtop">
-      <div>
-        <div class="qnum" id="qnum"></div>
-        <span class="chip" id="qskill"></span>
+  <!-- اللعب -->
+  <div id="s-q" class="game hidden">
+    <aside class="side">
+      <div class="av" id="g-av"></div>
+      <div class="info">
+        <div class="nm" id="h-name"></div>
+        <div class="sub" id="h-cls"></div>
+        <div class="pts"><span id="h-pts">٠</span> نقطة</div>
+        <div class="looks" id="h-looks"></div>
       </div>
-      <div class="timer" id="timer">
-        <svg width="58" height="58" viewBox="0 0 58 58"><circle cx="29" cy="29" r="25" fill="none" stroke="#eceef6" stroke-width="6"/><circle id="ring" cx="29" cy="29" r="25" fill="none" stroke="#1f8a8a" stroke-width="6" stroke-linecap="round" stroke-dasharray="157.08" stroke-dashoffset="0"/></svg>
-        <span id="tsec">45</span>
+    </aside>
+    <section class="card main">
+      <div class="progress" style="margin-top:0"><i id="prog"></i></div>
+      <div class="qtop">
+        <div>
+          <div class="qnum" id="qnum"></div>
+          <span class="chip" id="qskill"></span>
+        </div>
+        <div class="timer" id="timer">
+          <svg width="58" height="58" viewBox="0 0 58 58"><circle cx="29" cy="29" r="25" fill="none" stroke="#eceef6" stroke-width="6"/><circle id="ring" cx="29" cy="29" r="25" fill="none" stroke="#1f8a8a" stroke-width="6" stroke-linecap="round" stroke-dasharray="157.08" stroke-dashoffset="0"/></svg>
+          <span id="tsec">٤٥</span>
+        </div>
       </div>
-    </div>
-    <div class="qtext" id="qtext"></div>
-    <div class="fig" id="qfig"></div>
-    <div class="opts" id="opts"></div>
-    <div class="toast" id="toast"></div>
-  </section>
+      <div class="qtext" id="qtext"></div>
+      <div class="fig" id="qfig"></div>
+      <div class="opts" id="opts"></div>
+      <div class="fb" id="fb">
+        <div class="msg" id="fb-msg"></div>
+        <div class="exp" id="fb-exp"></div>
+        <div class="picker hidden" id="picker">
+          <h4>✨ ادخلي الصالون واختاري لمسة لصورتك</h4>
+          <div class="grid" id="pgrid"></div>
+        </div>
+        <button class="btn nextbtn" id="nextbtn">السؤال التالي ←</button>
+      </div>
+    </section>
+  </div>
 
   <!-- النتيجة -->
   <section id="s-res" class="card result hidden">
-    <span class="chip">أحسنتِ! انتهى التحدّي</span>
-    <h2 id="res-name" style="margin:10px 0 0"></h2>
-    <div class="big"><span id="res-pts">0</span></div>
+    <span class="chip">انتهت المسابقة 🎉</span>
+    <div class="res-av" id="res-av"></div>
+    <h2 id="res-name" style="margin:6px 0 0"></h2>
+    <div id="res-msg" style="color:var(--purple);font-weight:700"></div>
+    <div class="big"><span id="res-pts">٠</span></div>
     <div style="color:var(--muted)">نقطة</div>
     <div class="stats">
       <div><b id="res-c"></b>إجابات صحيحة</div>
@@ -89,82 +172,114 @@
     </div>
     <h3 style="margin:6px 0 4px;text-align:right">إتقانك لمهارات نافس</h3>
     <div class="skills" id="res-skills"></div>
-    <p class="foot">سُجّلت نتيجتك لدى معلمتك. الترتيب تعلنه المعلمة.</p>
+    <p class="foot">حُفظت نتيجتك لدى معلمتك، والتتويج تعلنه المعلمة 🏆</p>
   </section>
 </div>
 
+<script src="avatar.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const AR = (n) => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
 const CLS_AR = { "3-1": "ثالث ١", "3-2": "ثالث ٢", "3-3": "ثالث ٣" };
 const LETTERS = { a: "أ", b: "ب", c: "ج", d: "د" };
 const fmtTime = (ms) => { const s = Math.round(ms / 1000), m = Math.floor(s / 60); return (m ? AR(m) + " د " : "") + AR(s % 60) + " ث"; };
-const show = (id) => ["s-entry", "s-count", "s-q", "s-res"].forEach(s => $(s).classList.toggle("hidden", s !== id));
-const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
-                set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+const pickOne = (a) => a[Math.floor(Math.random() * a.length)];
+const SCREENS = ["s-entry", "s-how", "s-count", "s-q", "s-res"];
+const show = (id) => { SCREENS.forEach(s => $(s).classList.toggle("hidden", s !== id)); window.scrollTo({ top: 0, behavior: "smooth" }); };
+const ls = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+             set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 
-let cls = null, S = null, qi = 0, timerId = null, qStart = 0, locked = false, SEC = 45;
+const MSG_OK = ["جيناتك سائدة في التفوق! 🧬", "إجابة نقية الصفة ١٠٠٪ ✨", "مندل نفسه يصفّق لك 👏", "سلسلة DNA عندك مكتملة! 🔬", "طرازك الشكلي: نجمة علوم ⭐", "مربع بانيت يقول: احتمال تفوقك ١٠٠٪ 🎯"];
+const MSG_NO = ["لا بأس! حتى مندل جرّب آلاف النباتات 🌱", "طفرة صغيرة… نصلحها في السؤال الجاي 💪", "الصفة المتنحية تظهر أحيانًا 😄 ركّزي في التالي", "كل خطأ خطوة نحو الإتقان 🧠"];
 
+let cls = null, S = null, Q = null, timerId = null, deadline = 0, locked = false, SEC = 45;
+
+$("hero-av").innerHTML = avatarSVG([]);
+$("strip").innerHTML = TOUCHES.map(t => `<span>${t.icon} ${t.name}</span>`).join("");
+$("howbtn").onclick = () => show("s-how");
+$("howback").onclick = () => show("s-entry");
 document.querySelectorAll("#classes button").forEach(b => b.onclick = () => {
   cls = b.dataset.c; document.querySelectorAll("#classes button").forEach(x => x.classList.toggle("on", x === b));
 });
 
 async function api(path, body) {
-  const r = await fetch("/api/" + path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {});
+  const r = await fetch("/api/" + path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : { cache: "no-store" });
   const j = await r.json().catch(() => ({ error: "تعذّر الاتصال، تأكدي من الإنترنت" }));
   if (!r.ok) throw new Error(j.error || "حدث خطأ");
   return j;
 }
+async function retry(fn) {
+  for (let i = 0; ; i++) { try { return await fn(); } catch (e) { if (i >= 2) throw e; await new Promise(r => setTimeout(r, 1200)); } }
+}
 const showErr = (m) => { $("err").textContent = m; $("err").style.display = m ? "block" : "none"; };
+
+function drawAvatar(pop) {
+  $("g-av").innerHTML = avatarSVG(S.look, { id: "g" });
+  $("h-looks").textContent = `لمسات الصالون: ${AR(S.look.length)} من ${AR(TOUCHES.length)}`;
+  if (pop) { $("g-av").classList.remove("pop"); void $("g-av").offsetWidth; $("g-av").classList.add("pop"); sparkle($("g-av")); }
+}
+function sparkle(el) {
+  const r = el.getBoundingClientRect();
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement("div"); s.className = "sparkle"; s.textContent = pickOne(["✨", "💖", "⭐", "🌸"]);
+    s.style.left = (r.left + r.width / 2) + "px"; s.style.top = (r.top + r.height / 2) + "px";
+    s.style.setProperty("--dx", (Math.cos(i / 8 * 6.28) * 90) + "px"); s.style.setProperty("--dy", (Math.sin(i / 8 * 6.28) * 90) + "px");
+    document.body.appendChild(s); setTimeout(() => s.remove(), 1000);
+  }
+}
 
 $("go").onclick = async () => {
   showErr("");
   const name = $("name").value.replace(/\s+/g, " ").trim();
   if (name.split(" ").length < 2) return showErr("اكتبي اسمك الثلاثي كاملًا");
   if (!cls) return showErr("اختاري فصلك");
-  const saved = store.get("wiratha-session");
+  const saved = ls.get("salon-wiratha");
   $("go").disabled = true;
   try {
     const res = await api("start", { name, cls, token: saved && saved.token });
-    S = { ...res, name, cls, pts: res.sum ? res.sum.points : 0, done: res.sum ? res.sum.answered : 0 };
+    S = { key: res.key, token: res.token, name, cls, look: res.sum.look || [], pts: res.sum.points, total: res.sum.total };
     SEC = res.seconds || 45;
-    store.set("wiratha-session", { token: res.token, key: res.key });
+    ls.set("salon-wiratha", { token: res.token, key: res.key });
     $("h-name").textContent = name; $("h-cls").textContent = CLS_AR[cls]; $("h-pts").textContent = AR(S.pts);
-    qi = 0;
-    if (!S.questions.length) return finish();
-    countdown();
+    drawAvatar(false);
+    res.resumed ? nextQ() : countdown();
   } catch (e) { showErr(e.message); }
   finally { $("go").disabled = false; }
 };
 
 function countdown() {
   show("s-count"); let n = 3; $("count").textContent = AR(n);
-  const t = setInterval(() => { n--; if (n <= 0) { clearInterval(t); renderQ(); } else $("count").textContent = AR(n); }, 1000);
+  const t = setInterval(() => { n--; if (n <= 0) { clearInterval(t); nextQ(); } else $("count").textContent = AR(n); }, 900);
 }
 
-function renderQ() {
-  const q = S.questions[qi]; locked = false; show("s-q");
-  const num = S.done + qi + 1;
-  $("qnum").textContent = `السؤال ${AR(num)} من ${AR(S.total)}`;
-  $("qskill").textContent = "مهارة: " + q.skillName;
-  $("prog").style.width = ((num - 1) / S.total * 100) + "%";
-  $("qtext").textContent = q.text;
-  $("qfig").innerHTML = q.fig || ""; $("qfig").style.display = q.fig ? "flex" : "none";
-  $("toast").textContent = ""; $("toast").className = "toast";
+async function nextQ() {
+  $("nextbtn").disabled = true;
+  let r;
+  try { r = await retry(() => api("next", { key: S.key, token: S.token })); }
+  catch (e) { $("nextbtn").disabled = false; $("fb-msg").textContent = "تعذّر الاتصال، اضغطي مرة أخرى"; return; }
+  if (r.done) return finish();
+  Q = r.q; locked = false; show("s-q");
+  $("qnum").textContent = `السؤال ${AR(r.n)} من ${AR(r.total)}`;
+  $("qskill").textContent = "مهارة: " + Q.skillName;
+  $("prog").style.width = ((r.n - 1) / r.total * 100) + "%";
+  $("qtext").textContent = Q.text;
+  $("qfig").innerHTML = Q.fig || ""; $("qfig").style.display = Q.fig ? "flex" : "none";
+  $("fb").className = "fb"; $("picker").classList.add("hidden");
   const box = $("opts"); box.innerHTML = "";
   for (const k of ["a", "b", "c", "d"]) {
     const b = document.createElement("button");
     b.className = "opt"; b.dataset.k = k;
     b.innerHTML = `<span class="L">${LETTERS[k]}</span><span></span>`;
-    b.lastChild.textContent = q.opts[k];
+    b.lastChild.textContent = Q.opts[k];
     b.onclick = () => pick(k);
     box.appendChild(b);
   }
-  qStart = performance.now(); tick(); clearInterval(timerId); timerId = setInterval(tick, 200);
+  deadline = performance.now() + r.leftMs;
+  clearInterval(timerId); tick(); timerId = setInterval(tick, 200);
 }
 
 function tick() {
-  const left = Math.max(0, SEC - (performance.now() - qStart) / 1000);
+  const left = Math.max(0, (deadline - performance.now()) / 1000);
   $("tsec").textContent = AR(Math.ceil(left));
   $("ring").setAttribute("stroke-dashoffset", (157.08 * (1 - left / SEC)).toFixed(2));
   $("ring").setAttribute("stroke", left <= 10 ? "#c9483f" : "#1f8a8a");
@@ -174,38 +289,63 @@ function tick() {
 
 async function pick(k) {
   if (locked) return; locked = true; clearInterval(timerId);
-  const q = S.questions[qi];
   document.querySelectorAll(".opt").forEach(b => b.disabled = true);
   let res;
-  for (let tries = 0; tries < 3; tries++) {
-    try { res = await api("answer", { key: S.key, token: S.token, qid: q.id, choice: k }); break; }
-    catch (e) { if (tries === 2) { $("toast").textContent = "تعذّر حفظ الإجابة، تحققي من الإنترنت ثم أعيدي فتح الصفحة واكتبي الاسم نفسه للمتابعة."; $("toast").className = "toast no"; return; } await new Promise(r => setTimeout(r, 1200)); }
+  try { res = await retry(() => api("answer", { key: S.key, token: S.token, qid: Q.id, choice: k })); }
+  catch (e) {
+    $("fb").className = "fb no"; $("fb-msg").textContent = "تعذّر حفظ الإجابة، تحققي من الإنترنت ثم أعيدي فتح الصفحة واكتبي اسمك نفسه للمتابعة."; $("fb-exp").textContent = ""; $("nextbtn").classList.add("hidden"); return;
   }
   document.querySelectorAll(".opt").forEach(b => {
-    if (b.dataset.k === res.ans) b.classList.add("ok");
-    else if (b.dataset.k === k) b.classList.add("no");
+    if (b.dataset.k === res.ans) b.classList.add("ok"); else if (b.dataset.k === k) b.classList.add("no");
   });
   S.pts = res.sum.points; $("h-pts").textContent = AR(S.pts);
-  $("toast").textContent = res.ok ? `إجابة صحيحة! +${AR(res.pts)}` : (k ? "إجابة غير صحيحة" : "انتهى الوقت");
-  $("toast").className = "toast " + (res.ok ? "ok" : "no");
-  S.last = res.sum;
-  setTimeout(() => { qi++; if (qi < S.questions.length) renderQ(); else finish(); }, 1800);
+  $("fb").className = "fb " + (res.ok ? "ok" : "no");
+  $("fb-msg").textContent = res.ok ? `${pickOne(MSG_OK)}  +${AR(res.pts)}` : (k ? pickOne(MSG_NO) : "انتهى الوقت ⏰ الأسرع تكسب نقاطًا أكثر!");
+  $("fb-exp").innerHTML = "<b>الشرح: </b>"; $("fb-exp").append(res.exp || "");
+  $("nextbtn").classList.remove("hidden"); $("nextbtn").disabled = false;
+  $("nextbtn").textContent = res.sum.answered >= res.sum.total ? "عرض نتيجتي 🎉" : "السؤال التالي ←";
+  const remaining = TOUCHES.filter(t => !S.look.includes(t.id));
+  if (res.ok && remaining.length) {
+    $("picker").classList.remove("hidden");
+    $("pgrid").innerHTML = "";
+    TOUCHES.forEach(t => {
+      const b = document.createElement("button"); const used = S.look.includes(t.id);
+      b.className = used ? "used" : ""; b.disabled = used;
+      b.innerHTML = `<span class="e">${t.icon}</span>${t.name}`;
+      b.onclick = () => chooseTouch(t.id);
+      $("pgrid").appendChild(b);
+    });
+  }
+  $("fb").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+async function chooseTouch(id) {
+  if (S.look.includes(id)) return;
+  S.look.push(id); drawAvatar(true);
+  $("picker").classList.add("hidden");
+  $("fb-msg").textContent = S.look.length === TOUCHES.length ? "اكتملت إطلالتك! أنتِ نجمة العلوم 👑" : "واو! إطلالة جديدة 💖";
+  try { const r = await api("touch", { key: S.key, token: S.token, touch: id }); S.look = r.look; } catch {}
+}
+$("nextbtn").onclick = () => nextQ();
+
 async function finish() {
-  show("s-res"); $("prog").style.width = "100%";
+  show("s-res"); clearInterval(timerId);
   $("res-name").textContent = S.name;
+  $("res-av").innerHTML = avatarSVG(S.look, { id: "r" });
   try {
-    const r = await api("me?key=" + encodeURIComponent(S.key) + "&token=" + encodeURIComponent(S.token));
+    const r = await retry(() => api("me?key=" + encodeURIComponent(S.key) + "&token=" + encodeURIComponent(S.token)));
+    const pct = Math.round(r.correct / r.total * 100);
+    $("res-av").innerHTML = avatarSVG(r.look, { id: "r" });
     $("res-pts").textContent = AR(r.points);
-    $("res-c").textContent = AR(r.correct) + " / " + AR(r.total);
-    $("res-pct").textContent = AR(Math.round(r.correct / r.total * 100)) + "٪";
+    $("res-c").textContent = AR(r.correct) + " من " + AR(r.total);
+    $("res-pct").textContent = AR(pct) + "٪";
     $("res-t").textContent = fmtTime(r.timeMs);
+    $("res-msg").textContent = pct >= 90 ? "إتقان سائد بامتياز! نجمة علوم حقيقية 👑" : pct >= 70 ? "أداء رائع! جيناتك العلمية قوية 🧬" : pct >= 50 ? "جيد! راجعي المهارات الحمراء وستتألقين 🌱" : "بداية جميلة! راجعي الدرس وستتفوقين 💪";
     $("res-skills").innerHTML = "";
     Object.values(r.bySkill).forEach(s => {
       const p = s.ok / s.n, col = p >= .8 ? "var(--green)" : p >= .5 ? "var(--orange)" : "var(--red)";
       const row = document.createElement("div"); row.className = "skill";
-      row.innerHTML = `<span class="n"></span><span class="bar2"><i style="width:${p * 100}%;background:${col}"></i></span><span class="v">${AR(s.ok)}/${AR(s.n)}</span>`;
+      row.innerHTML = `<span class="n"></span><span class="bar2"><i style="width:${p * 100}%;background:${col}"></i></span><span class="v">${AR(s.ok)} من ${AR(s.n)}</span>`;
       row.firstChild.textContent = s.name; $("res-skills").appendChild(row);
     });
   } catch (e) { $("res-pts").textContent = AR(S.pts); }

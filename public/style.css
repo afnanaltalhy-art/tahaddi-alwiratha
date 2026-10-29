@@ -104,6 +104,6 @@ table.cmp th{background:#efedf9;color:var(--purple)}
 .skill .n{flex:1}
 .skill .bar2{width:90px;height:8px;background:#eceef6;border-radius:9px;overflow:hidden}
 .skill .bar2 i{display:block;height:100%}
-.skill .v{width:36px;text-align:left;font-weight:700}
+.skill .v{width:60px;text-align:left;white-space:nowrap;font-weight:700}
 .foot{text-align:center;color:var(--muted);font-size:12.5px;margin:18px 0 8px}
 .hidden{display:none!important}
