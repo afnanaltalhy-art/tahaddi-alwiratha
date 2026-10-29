@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تحدّي الوراثة | نافس</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="report-head">
+    <div class="bar"></div>
+    <div class="row">
+      <div class="logo"><img src="assets/moe.png" alt="وزارة التعليم"></div>
+      <div class="center">
+        <div class="k">المملكة العربية السعودية</div>
+        <div class="s">وزارة التعليم</div>
+        <div class="school">متوسطة أم المؤمنين ميمونة</div>
+      </div>
+      <div class="logo"><img src="assets/nafes.png" alt="نافس"></div>
+    </div>
+    <div class="meta">
+      <span>إعداد: <b>أ. خلود المطيري</b></span>
+      <span>مديرة المدرسة: <b>أ. نادية العتيبي</b></span>
+    </div>
+  </header>
+
+  <!-- التسجيل -->
+  <section id="s-entry" class="card">
+    <div class="title">
+      <span class="chip">نافس · علوم ثالث متوسط</span>
+      <h1>تحدّي الوراثة</h1>
+      <p>الوحدة الثانية: الوراثة — أسئلة على مهارات نافس</p>
+    </div>
+    <div class="rules">
+      <div><b id="r-n">21</b>سؤالًا</div>
+      <div><b>45</b>ثانية لكل سؤال</div>
+      <div><b>1</b>محاولة فقط</div>
+    </div>
+    <label for="name">اسمك الثلاثي</label>
+    <input id="name" type="text" autocomplete="off" placeholder="مثال: نورة محمد العتيبي" maxlength="60">
+    <label>فصلك</label>
+    <div class="classes" id="classes">
+      <button type="button" data-c="3-1">ثالث ١</button>
+      <button type="button" data-c="3-2">ثالث ٢</button>
+      <button type="button" data-c="3-3">ثالث ٣</button>
+    </div>
+    <div class="err" id="err"></div>
+    <button class="btn" id="go">ابدئي التحدّي</button>
+    <p class="foot">النقاط = صحة الإجابة + سرعتها. اكتبي اسمك بدقة؛ لا يمكن إعادة المحاولة.</p>
+  </section>
+
+  <!-- العد التنازلي -->
+  <section id="s-count" class="card hidden"><div class="count" id="count">٣</div></section>
+
+  <!-- السؤال -->
+  <section id="s-q" class="card hidden">
+    <div class="hud">
+      <div class="who"><b id="h-name"></b> · <span id="h-cls"></span></div>
+      <div class="pts"><span id="h-pts">0</span> نقطة</div>
+    </div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="qtop">
+      <div>
+        <div class="qnum" id="qnum"></div>
+        <span class="chip" id="qskill"></span>
+      </div>
+      <div class="timer" id="timer">
+        <svg width="58" height="58" viewBox="0 0 58 58"><circle cx="29" cy="29" r="25" fill="none" stroke="#eceef6" stroke-width="6"/><circle id="ring" cx="29" cy="29" r="25" fill="none" stroke="#1f8a8a" stroke-width="6" stroke-linecap="round" stroke-dasharray="157.08" stroke-dashoffset="0"/></svg>
+        <span id="tsec">45</span>
+      </div>
+    </div>
+    <div class="qtext" id="qtext"></div>
+    <div class="fig" id="qfig"></div>
+    <div class="opts" id="opts"></div>
+    <div class="toast" id="toast"></div>
+  </section>
+
+  <!-- النتيجة -->
+  <section id="s-res" class="card result hidden">
+    <span class="chip">أحسنتِ! انتهى التحدّي</span>
+    <h2 id="res-name" style="margin:10px 0 0"></h2>
+    <div class="big"><span id="res-pts">0</span></div>
+    <div style="color:var(--muted)">نقطة</div>
+    <div class="stats">
+      <div><b id="res-c"></b>إجابات صحيحة</div>
+      <div><b id="res-pct"></b>نسبة الإتقان</div>
+      <div><b id="res-t"></b>زمن الحل</div>
+    </div>
+    <h3 style="margin:6px 0 4px;text-align:right">إتقانك لمهارات نافس</h3>
+    <div class="skills" id="res-skills"></div>
+    <p class="foot">سُجّلت نتيجتك لدى معلمتك. الترتيب تعلنه المعلمة.</p>
+  </section>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const AR = (n) => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+const CLS_AR = { "3-1": "ثالث ١", "3-2": "ثالث ٢", "3-3": "ثالث ٣" };
+const LETTERS = { a: "أ", b: "ب", c: "ج", d: "د" };
+const fmtTime = (ms) => { const s = Math.round(ms / 1000), m = Math.floor(s / 60); return (m ? AR(m) + " د " : "") + AR(s % 60) + " ث"; };
+const show = (id) => ["s-entry", "s-count", "s-q", "s-res"].forEach(s => $(s).classList.toggle("hidden", s !== id));
+const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+                set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+
+let cls = null, S = null, qi = 0, timerId = null, qStart = 0, locked = false, SEC = 45;
+
+document.querySelectorAll("#classes button").forEach(b => b.onclick = () => {
+  cls = b.dataset.c; document.querySelectorAll("#classes button").forEach(x => x.classList.toggle("on", x === b));
+});
+
+async function api(path, body) {
+  const r = await fetch("/api/" + path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {});
+  const j = await r.json().catch(() => ({ error: "تعذّر الاتصال، تأكدي من الإنترنت" }));
+  if (!r.ok) throw new Error(j.error || "حدث خطأ");
+  return j;
+}
+const showErr = (m) => { $("err").textContent = m; $("err").style.display = m ? "block" : "none"; };
+
+$("go").onclick = async () => {
+  showErr("");
+  const name = $("name").value.replace(/\s+/g, " ").trim();
+  if (name.split(" ").length < 2) return showErr("اكتبي اسمك الثلاثي كاملًا");
+  if (!cls) return showErr("اختاري فصلك");
+  const saved = store.get("wiratha-session");
+  $("go").disabled = true;
+  try {
+    const res = await api("start", { name, cls, token: saved && saved.token });
+    S = { ...res, name, cls, pts: res.sum ? res.sum.points : 0, done: res.sum ? res.sum.answered : 0 };
+    SEC = res.seconds || 45;
+    store.set("wiratha-session", { token: res.token, key: res.key });
+    $("h-name").textContent = name; $("h-cls").textContent = CLS_AR[cls]; $("h-pts").textContent = AR(S.pts);
+    qi = 0;
+    if (!S.questions.length) return finish();
+    countdown();
+  } catch (e) { showErr(e.message); }
+  finally { $("go").disabled = false; }
+};
+
+function countdown() {
+  show("s-count"); let n = 3; $("count").textContent = AR(n);
+  const t = setInterval(() => { n--; if (n <= 0) { clearInterval(t); renderQ(); } else $("count").textContent = AR(n); }, 1000);
+}
+
+function renderQ() {
+  const q = S.questions[qi]; locked = false; show("s-q");
+  const num = S.done + qi + 1;
+  $("qnum").textContent = `السؤال ${AR(num)} من ${AR(S.total)}`;
+  $("qskill").textContent = "مهارة: " + q.skillName;
+  $("prog").style.width = ((num - 1) / S.total * 100) + "%";
+  $("qtext").textContent = q.text;
+  $("qfig").innerHTML = q.fig || ""; $("qfig").style.display = q.fig ? "flex" : "none";
+  $("toast").textContent = ""; $("toast").className = "toast";
+  const box = $("opts"); box.innerHTML = "";
+  for (const k of ["a", "b", "c", "d"]) {
+    const b = document.createElement("button");
+    b.className = "opt"; b.dataset.k = k;
+    b.innerHTML = `<span class="L">${LETTERS[k]}</span><span></span>`;
+    b.lastChild.textContent = q.opts[k];
+    b.onclick = () => pick(k);
+    box.appendChild(b);
+  }
+  qStart = performance.now(); tick(); clearInterval(timerId); timerId = setInterval(tick, 200);
+}
+
+function tick() {
+  const left = Math.max(0, SEC - (performance.now() - qStart) / 1000);
+  $("tsec").textContent = AR(Math.ceil(left));
+  $("ring").setAttribute("stroke-dashoffset", (157.08 * (1 - left / SEC)).toFixed(2));
+  $("ring").setAttribute("stroke", left <= 10 ? "#c9483f" : "#1f8a8a");
+  $("timer").classList.toggle("low", left <= 10);
+  if (left <= 0 && !locked) pick(null);
+}
+
+async function pick(k) {
+  if (locked) return; locked = true; clearInterval(timerId);
+  const q = S.questions[qi];
+  document.querySelectorAll(".opt").forEach(b => b.disabled = true);
+  let res;
+  for (let tries = 0; tries < 3; tries++) {
+    try { res = await api("answer", { key: S.key, token: S.token, qid: q.id, choice: k }); break; }
+    catch (e) { if (tries === 2) { $("toast").textContent = "تعذّر حفظ الإجابة، تحققي من الإنترنت ثم أعيدي فتح الصفحة واكتبي الاسم نفسه للمتابعة."; $("toast").className = "toast no"; return; } await new Promise(r => setTimeout(r, 1200)); }
+  }
+  document.querySelectorAll(".opt").forEach(b => {
+    if (b.dataset.k === res.ans) b.classList.add("ok");
+    else if (b.dataset.k === k) b.classList.add("no");
+  });
+  S.pts = res.sum.points; $("h-pts").textContent = AR(S.pts);
+  $("toast").textContent = res.ok ? `إجابة صحيحة! +${AR(res.pts)}` : (k ? "إجابة غير صحيحة" : "انتهى الوقت");
+  $("toast").className = "toast " + (res.ok ? "ok" : "no");
+  S.last = res.sum;
+  setTimeout(() => { qi++; if (qi < S.questions.length) renderQ(); else finish(); }, 1800);
+}
+
+async function finish() {
+  show("s-res"); $("prog").style.width = "100%";
+  $("res-name").textContent = S.name;
+  try {
+    const r = await api("me?key=" + encodeURIComponent(S.key) + "&token=" + encodeURIComponent(S.token));
+    $("res-pts").textContent = AR(r.points);
+    $("res-c").textContent = AR(r.correct) + " / " + AR(r.total);
+    $("res-pct").textContent = AR(Math.round(r.correct / r.total * 100)) + "٪";
+    $("res-t").textContent = fmtTime(r.timeMs);
+    $("res-skills").innerHTML = "";
+    Object.values(r.bySkill).forEach(s => {
+      const p = s.ok / s.n, col = p >= .8 ? "var(--green)" : p >= .5 ? "var(--orange)" : "var(--red)";
+      const row = document.createElement("div"); row.className = "skill";
+      row.innerHTML = `<span class="n"></span><span class="bar2"><i style="width:${p * 100}%;background:${col}"></i></span><span class="v">${AR(s.ok)}/${AR(s.n)}</span>`;
+      row.firstChild.textContent = s.name; $("res-skills").appendChild(row);
+    });
+  } catch (e) { $("res-pts").textContent = AR(S.pts); }
+}
+
+api("count").then(r => { if (r.total) $("r-n").textContent = AR(r.total); }).catch(() => {});
+</script>
+</body>
+</html>
