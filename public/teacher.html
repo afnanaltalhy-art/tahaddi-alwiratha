@@ -70,13 +70,13 @@ h3{margin:0 0 8px;color:var(--purple)}
       <div class="center">
         <div class="k">المملكة العربية السعودية</div>
         <div class="s">وزارة التعليم</div>
-        <div class="school">متوسطة أم المؤمنين ميمونة</div>
+        <div class="school" data-p="school">متوسطة أم المؤمنين ميمونة</div>
       </div>
       <div class="logo"><img src="assets/nafes.png" alt="نافس"></div>
     </div>
     <div class="meta">
-      <span>إعداد: <b>أ. خلود المطيري</b></span>
-      <span>مديرة المدرسة: <b>أ. نادية العتيبي</b></span>
+      <span>إعداد: <b data-p="prep">أ. خلود المطيري</b></span>
+      <span>مديرة المدرسة: <b data-p="principal">أ. نادية العتيبي</b></span>
     </div>
   </header>
 
@@ -94,9 +94,7 @@ h3{margin:0 0 8px;color:var(--purple)}
     </div>
     <div class="tabs" id="tabs">
       <button data-c="all" class="on">جميع الفصول</button>
-      <button data-c="3-1">ثالث ١</button>
-      <button data-c="3-2">ثالث ٢</button>
-      <button data-c="3-3">ثالث ٣</button>
+
     </div>
     <div class="podium" id="podium"></div>
     <div class="tools">
@@ -128,11 +126,12 @@ h3{margin:0 0 8px;color:var(--purple)}
   <div class="sub" id="show-sub"></div>
   <div class="podium" id="podium2"></div>
 </div>
+<script src="profiles.js"></script>
 <script src="avatar.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const AR = (n) => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
-const CLS_AR = { "3-1": "ثالث ١", "3-2": "ثالث ٢", "3-3": "ثالث ٣" };
+applyProfile();
 const K = new URLSearchParams(location.search).get("k") || "";
 const fmtTime = (ms) => { const s = Math.round(ms / 1000), m = Math.floor(s / 60); return (m ? AR(m) + " د " : "") + AR(s % 60) + " ث"; };
 const colorOf = (p) => p >= .8 ? "var(--green)" : p >= .5 ? "var(--orange)" : "var(--red)";
@@ -141,13 +140,15 @@ const rankSort = (a, b) => (b.points - a.points) || (b.correct - a.correct) || (
 
 let DATA = null, filter = "all", armed = null;
 
+if (PROFILE.classes.length > 1) $("tabs").insertAdjacentHTML("beforeend", PROFILE.classes.map(([id, nm]) => `<button data-c="${id}">${nm}</button>`).join(""));
+else $("tabs").style.display = "none";
 document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
   filter = b.dataset.c; document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x === b)); render();
 });
 
 async function load() {
   try {
-    const r = await fetch("/api/teacher?k=" + encodeURIComponent(K), { cache: "no-store" });
+    const r = await fetch("/api/teacher?s=" + SCHOOL_ID + "&k=" + encodeURIComponent(K), { cache: "no-store" });
     const j = await r.json();
     if (!r.ok) throw new Error(j.error || "خطأ");
     DATA = j; render();
@@ -233,7 +234,7 @@ $("closeShow").onclick = () => { $("show").classList.add("hidden"); try { docume
 async function del(key) {
   if (armed !== key) { armed = key; render(); setTimeout(() => { if (armed === key) { armed = null; render(); } }, 4000); return; }
   armed = null;
-  await fetch("/api/teacher/delete?k=" + encodeURIComponent(K), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ key }) });
+  await fetch("/api/teacher/delete?s=" + SCHOOL_ID + "&k=" + encodeURIComponent(K), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ key }) });
   load();
 }
 

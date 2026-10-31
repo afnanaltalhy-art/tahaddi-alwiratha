@@ -79,13 +79,13 @@
       <div class="center">
         <div class="k">المملكة العربية السعودية</div>
         <div class="s">وزارة التعليم</div>
-        <div class="school">متوسطة أم المؤمنين ميمونة</div>
+        <div class="school" data-p="school">متوسطة أم المؤمنين ميمونة</div>
       </div>
       <div class="logo"><img src="assets/nafes.png" alt="نافس"></div>
     </div>
     <div class="meta">
-      <span>إعداد: <b>أ. خلود المطيري</b></span>
-      <span>مديرة المدرسة: <b>أ. نادية العتيبي</b></span>
+      <span>إعداد: <b data-p="prep">أ. خلود المطيري</b></span>
+      <span>مديرة المدرسة: <b data-p="principal">أ. نادية العتيبي</b></span>
     </div>
   </header>
 
@@ -108,9 +108,7 @@
     <input id="name" type="text" autocomplete="off" placeholder="مثال: نورة محمد العتيبي" maxlength="60">
     <label>فصلك</label>
     <div class="classes" id="classes">
-      <button type="button" data-c="3-1">ثالث ١</button>
-      <button type="button" data-c="3-2">ثالث ٢</button>
-      <button type="button" data-c="3-3">ثالث ٣</button>
+
     </div>
     <div class="err" id="err"></div>
     <button class="btn" id="go">ادخلي الصالون ✨</button>
@@ -199,11 +197,12 @@
   </section>
 </div>
 
+<script src="profiles.js"></script>
 <script src="avatar.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const AR = (n) => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
-const CLS_AR = { "3-1": "ثالث ١", "3-2": "ثالث ٢", "3-3": "ثالث ٣" };
+applyProfile();
 const LETTERS = { a: "أ", b: "ب", c: "ج", d: "د" };
 const fmtTime = (ms) => { const s = Math.round(ms / 1000), m = Math.floor(s / 60); return (m ? AR(m) + " د " : "") + AR(s % 60) + " ث"; };
 const pickOne = (a) => a[Math.floor(Math.random() * a.length)];
@@ -221,9 +220,12 @@ $("hero-av").innerHTML = avatarSVG({});
 $("strip").innerHTML = FEATURES.map(f => `<span>${f.icon} ${f.name}</span>`).join("");
 $("howbtn").onclick = () => show("s-how");
 $("howback").onclick = () => show("s-entry");
+$("classes").innerHTML = PROFILE.classes.map(([id, nm]) => `<button type="button" data-c="${id}">${nm}</button>`).join("");
+$("classes").style.gridTemplateColumns = `repeat(${PROFILE.classes.length},1fr)`;
 document.querySelectorAll("#classes button").forEach(b => b.onclick = () => {
   cls = b.dataset.c; document.querySelectorAll("#classes button").forEach(x => x.classList.toggle("on", x === b));
 });
+if (PROFILE.classes.length === 1) document.querySelector("#classes button").click();
 
 async function api(path, body) {
   const r = await fetch("/api/" + path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : { cache: "no-store" });
@@ -257,13 +259,13 @@ $("go").onclick = async () => {
   const name = $("name").value.replace(/\s+/g, " ").trim();
   if (name.split(" ").length < 2) return showErr("اكتبي اسمك الثلاثي كاملًا");
   if (!cls) return showErr("اختاري فصلك");
-  const saved = ls.get("salon-wiratha");
+  const saved = ls.get("salon-wiratha" + (SCHOOL_ID === "default" ? "" : "-" + SCHOOL_ID));
   $("go").disabled = true;
   try {
-    const res = await api("start", { name, cls, token: saved && saved.token });
+    const res = await api("start", { name, cls, school: SCHOOL_ID, token: saved && saved.token });
     S = { key: res.key, token: res.token, name, cls, look: (res.sum.look && !Array.isArray(res.sum.look)) ? res.sum.look : {}, used: res.sum.used || 0, correct: res.sum.correct || 0, pts: res.sum.points, total: res.sum.total };
     SEC = res.seconds || 45;
-    ls.set("salon-wiratha", { token: res.token, key: res.key });
+    ls.set("salon-wiratha" + (SCHOOL_ID === "default" ? "" : "-" + SCHOOL_ID), { token: res.token, key: res.key });
     $("h-name").textContent = name; $("h-cls").textContent = CLS_AR[cls]; $("h-pts").textContent = AR(S.pts);
     drawAvatar(false);
     res.resumed ? nextQ() : countdown();

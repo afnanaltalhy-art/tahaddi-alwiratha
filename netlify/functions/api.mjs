@@ -1,7 +1,13 @@
 import { getStore } from "@netlify/blobs";
 import { QUESTIONS, SKILLS, SECONDS_PER_Q, publicQuestion } from "../../lib/questions.mjs";
 
-const CLASSES = ["3-1", "3-2", "3-3"];
+// المدارس: لكل مدرسة فصولها ومفتاح رابط معلمتها (متغير بيئة) وبادئة لحفظ نتائجها منفصلة
+const SCHOOLS = {
+  default: { classes: ["3-1", "3-2", "3-3"], keyEnv: "TEACHER_KEY", prefix: "" },
+  sakhaibra: { classes: ["3"], keyEnv: "TEACHER_KEY_SAKHAIBRA", prefix: "sakhaibra/" },
+};
+const schoolOf = (id) => SCHOOLS[id] ? id : "default";
+const OTHER_PREFIXES = Object.values(SCHOOLS).map(x => x.prefix).filter(Boolean);
 const FEATURES = {
   style: ["comb", "braid", "bun"], hair: ["black", "brown", "honey", "auburn", "pink", "purple"], eyes: ["honey", "green", "blue"],
   blush: ["pink", "coral", "rose"], lips: ["red", "nude", "berry"], shadow: ["purple", "pink", "gold"], lashes: ["on"],
@@ -45,9 +51,10 @@ async function load(body) {
 async function start(body) {
   const name = cleanName(body.name);
   const cls = String(body.cls || "");
+  const sc = SCHOOLS[schoolOf(body.school)];
   if (name.split(" ").length < 2 || name.length < 5) return json({ error: "اكتبي اسمك الثلاثي كاملًا" }, 400);
-  if (!CLASSES.includes(cls)) return json({ error: "اختاري فصلك" }, 400);
-  const key = `${cls}/${normName(name)}`;
+  if (!sc.classes.includes(cls)) return json({ error: "اختاري فصلك" }, 400);
+  const key = `${sc.prefix}${cls}/${normName(name)}`;
   const s = store();
   const existing = await s.get(key, { type: "json" });
   if (existing) {
@@ -129,14 +136,16 @@ async function me(url) {
 }
 
 function teacherOk(req, url) {
-  const k = Netlify.env.get("TEACHER_KEY");
+  const k = Netlify.env.get(SCHOOLS[schoolOf(url.searchParams.get("s"))].keyEnv);
   return !!k && (url.searchParams.get("k") === k || req.headers.get("x-teacher-key") === k);
 }
 
 async function teacher(req, url) {
   if (!teacherOk(req, url)) return json({ error: "رابط المعلمة غير صحيح" }, 403);
   const s = store();
-  const { blobs } = await s.list();
+  const sc = SCHOOLS[schoolOf(url.searchParams.get("s"))];
+  const { blobs: all } = await s.list();
+  const blobs = all.filter(b => sc.prefix ? b.key.startsWith(sc.prefix) : !OTHER_PREFIXES.some(p => b.key.startsWith(p)));
   const list = (await Promise.all(blobs.map(async b => {
     const r = await s.get(b.key, { type: "json" });
     return r && { key: b.key, ...summary(r), detail: Object.fromEntries(Object.entries(r.answers).map(([q, a]) => [q, a.ok ? 1 : 0])) };
@@ -146,7 +155,10 @@ async function teacher(req, url) {
 
 async function teacherDelete(req, url, body) {
   if (!teacherOk(req, url)) return json({ error: "رابط المعلمة غير صحيح" }, 403);
-  await store().delete(String(body.key || ""));
+  const sc = SCHOOLS[schoolOf(url.searchParams.get("s"))];
+  const key = String(body.key || "");
+  const mine = sc.prefix ? key.startsWith(sc.prefix) : !OTHER_PREFIXES.some(p => key.startsWith(p));
+  if (mine) await store().delete(key);
   return json({ ok: true });
 }
 
